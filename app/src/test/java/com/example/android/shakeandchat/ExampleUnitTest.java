@@ -1,4 +1,4 @@
-package com.example.android.shakeandshop;
+package com.example.android.shakeandchat;
 
 import org.junit.Test;
 

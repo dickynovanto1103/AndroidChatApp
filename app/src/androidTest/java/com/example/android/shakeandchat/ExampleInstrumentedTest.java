@@ -1,4 +1,4 @@
-package com.example.android.shakeandshop;
+package com.example.android.shakeandchat;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

@@ -1,4 +1,4 @@
-package com.example.android.shakeandshop;
+package com.example.android.shakeandchat;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
