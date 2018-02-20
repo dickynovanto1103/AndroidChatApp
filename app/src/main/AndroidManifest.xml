@@ -3,6 +3,7 @@
     package="com.example.android.shakeandchat">
 
     <uses-feature android:name="android.hardware.sensor.accelerometer" android:required="true" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
     <application
         android:allowBackup="true"
