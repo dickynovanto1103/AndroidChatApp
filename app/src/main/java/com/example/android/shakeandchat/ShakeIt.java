@@ -17,10 +17,14 @@ import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -85,11 +89,6 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
             }
         });
 
-        mDatabase = FirebaseDatabase.getInstance();
-        mDBRef = mDatabase.getReference("user");
-        Log.d("FirebaseDB: ", mDBRef.toString());
-
-
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(this,
@@ -97,6 +96,36 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
         } else {
             mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         }
+
+        mDatabase = FirebaseDatabase.getInstance();
+        mDBRef = mDatabase.getReference("users");
+        ChildEventListener userListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Log.d("onChildAdded: ", dataSnapshot.getKey());
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                Log.d("onChildChanged: ", dataSnapshot.getKey());
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                Log.d("onChildRemoved: ", dataSnapshot.getKey());
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                Log.d("onChildMoved: ", dataSnapshot.getKey());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w("Error: ", "postComments:onCancelled", databaseError.toException());
+            }
+        };
+        mDBRef.addChildEventListener(userListener);
     }
 
     @Override
