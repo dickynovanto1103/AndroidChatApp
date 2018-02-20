@@ -28,7 +28,11 @@ public class ShakeIt extends AppCompatActivity {
         mShakeDetector.setOnShakeListener(new ShakeDetector.OnShakeListener() {
             @Override
             public void onShake(int count) {
-                findViewById(R.id.shake_logo).startAnimation(shake);
+                if (count > 0){
+                    findViewById(R.id.shake_logo).startAnimation(shake);
+                } else {
+                    findViewById(R.id.shake_logo).clearAnimation();
+                }
             }
         });
     }
