@@ -33,20 +33,25 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
     private DatabaseReference mDBRef;
     private FusedLocationProviderClient mFusedLocationClient;
     private static final int LOCATION_REQUEST_PERMISSION = 99;
+    private boolean firstShake;
+    private Location myLocation;
 
     private void findingFriends(){
         final Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
         findViewById(R.id.shake_logo).startAnimation(shake);
         mStatusText.setText(R.string.shaking_status);
 
-        mFusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                if (location != null){
-                    Log.d("Location: ", location.toString());
+        if (firstShake){
+            mFusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    if (location != null){
+                        myLocation = location;
+                        Log.d("Location: ", location.toString());
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     private void stopFindFriends(){
@@ -62,6 +67,7 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
         setContentView(R.layout.activity_shake_it);
 
         mStatusText = (TextView) findViewById(R.id.status_shake);
+        firstShake = true;
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -71,8 +77,10 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
             public void onShake(int count) {
                 if (count > 0){
                     findingFriends();
+                    firstShake = false;
                 } else {
                     stopFindFriends();
+                    firstShake = true;
                 }
             }
         });
