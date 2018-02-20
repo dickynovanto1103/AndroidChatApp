@@ -22,6 +22,8 @@ import android.widget.Toast;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -33,12 +35,20 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
     private Sensor mAccelerometer;
     private ShakeDetector mShakeDetector;
     private TextView mStatusText;
-    private FirebaseDatabase mDatabase;
     private DatabaseReference mDBRef;
     private FusedLocationProviderClient mFusedLocationClient;
     private static final int LOCATION_REQUEST_PERMISSION = 99;
     private boolean firstShake;
     private Location myLocation;
+
+    private void writeActiveUser(String name, String key){
+        User activeUser = new User(name, key, myLocation.getLatitude(), myLocation.getLongitude());
+        mDBRef.child(name).setValue(activeUser);
+    }
+
+    private void removeInactiveUser(String name){
+        mDBRef.child(name).removeValue();
+    }
 
     private void findingFriends(){
         final Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
@@ -52,6 +62,7 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
                     if (location != null){
                         myLocation = location;
                         Log.d("Location: ", location.toString());
+                        writeActiveUser("agung", "123");
                     }
                 }
             });
@@ -59,6 +70,7 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
     }
 
     private void stopFindFriends(){
+        removeInactiveUser("agung");
         findViewById(R.id.shake_logo).clearAnimation();
         mStatusText.setText(R.string.waiting_shake_status);
     }
@@ -97,8 +109,7 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
             mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         }
 
-        mDatabase = FirebaseDatabase.getInstance();
-        mDBRef = mDatabase.getReference("users");
+        mDBRef = FirebaseDatabase.getInstance().getReference("active_users");
         ChildEventListener userListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
