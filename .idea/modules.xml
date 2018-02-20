@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ShakeAndChat.iml" filepath="$PROJECT_DIR$/ShakeAndChat.iml" />
-      <module fileurl="file://D:\Kuliah\Semester 6\IF3111 - Pengembangan Aplikasi pada Platform Khusus\Tugas\ShakeAndChat\ShakeAndShop.iml" filepath="D:\Kuliah\Semester 6\IF3111 - Pengembangan Aplikasi pada Platform Khusus\Tugas\ShakeAndChat\ShakeAndShop.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
