@@ -84,6 +84,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             //sign in success
             GoogleSignInAccount acct = result.getSignInAccount();
             statusTextView.setText("Hello, "+acct.getDisplayName());
+            Intent intent = new Intent(this, ShakeIt.class);
+            startActivity(intent);
+            finish();
         }else{
         }
     }
