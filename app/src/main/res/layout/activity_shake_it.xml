@@ -20,6 +20,14 @@
         android:contentDescription="@string/shakeandchatdesc"
         android:id="@+id/shake_logo"/>
 
-
+    <TextView
+        android:id="@+id/status_shake"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/shake_logo"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="18dp"
+        android:text="@string/waiting_shake_status"
+        android:textAppearance="@style/TextAppearance.AppCompat.Notification.Info" />
 
 </RelativeLayout>
