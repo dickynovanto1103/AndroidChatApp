@@ -1,0 +1,99 @@
+{
+  "project_info": {
+    "project_number": "245007661046",
+    "firebase_url": "https://shakeandchat-a76f3.firebaseio.com",
+    "project_id": "shakeandchat-a76f3",
+    "storage_bucket": "shakeandchat-a76f3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:245007661046:android:97b99e28c6ecfe02",
+        "android_client_info": {
+          "package_name": "com.example.dicky.shakeandchat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "245007661046-dqljs2m49ah289jpfkied16un75iaqed.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.dicky.shakeandchat",
+            "certificate_hash": "583d9536fb042efa40517a3be123e4f2953ef814"
+          }
+        },
+        {
+          "client_id": "245007661046-ne7cab2eh5t6vjeppkdddhl3sf2r0t0v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUgSN4oT4P6M7q0FwpZwEhpw74Br3CsGM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "245007661046-ne7cab2eh5t6vjeppkdddhl3sf2r0t0v.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:245007661046:android:ae69641e0ce9782b",
+        "android_client_info": {
+          "package_name": "com.example.android.shakeandchat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "245007661046-vbehef3aaamrmg3qg1ri1o4o90dm2i65.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.android.shakeandchat",
+            "certificate_hash": "583d9536fb042efa40517a3be123e4f2953ef814"
+          }
+        },
+        {
+          "client_id": "245007661046-ne7cab2eh5t6vjeppkdddhl3sf2r0t0v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUgSN4oT4P6M7q0FwpZwEhpw74Br3CsGM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "245007661046-ne7cab2eh5t6vjeppkdddhl3sf2r0t0v.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
