@@ -5,17 +5,22 @@ import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import com.example.android.shakeandchat.R;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class ShakeIt extends AppCompatActivity {
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
     private ShakeDetector mShakeDetector;
     private TextView mStatusText;
+    private FirebaseDatabase mDatabase;
+    private DatabaseReference mDBRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +45,11 @@ public class ShakeIt extends AppCompatActivity {
                 }
             }
         });
+
+        mDatabase = FirebaseDatabase.getInstance();
+        mDBRef = mDatabase.getReference("user");
+
+        Log.d("FirebaseDB: ", mDBRef.toString());
     }
 
     @Override

@@ -59,6 +59,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "245007661046-9bh8njf6np23vg7ikkt0nfj4k2fr0t31.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.android.shakeandchat",
+            "certificate_hash": "ea905657b2603316ba1bd9766eae776ac5aed42f"
+          }
+        },
+        {
           "client_id": "245007661046-vbehef3aaamrmg3qg1ri1o4o90dm2i65.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
