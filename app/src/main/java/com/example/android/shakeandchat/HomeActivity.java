@@ -1,5 +1,6 @@
 package com.example.android.shakeandchat;
 
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -13,12 +14,16 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
     private static final String TAG = "HomeActivity";
 
@@ -34,6 +39,7 @@ public class HomeActivity extends AppCompatActivity {
 
     GoogleSignInAccount account;
     SectionsPageAdapter adapter;
+    GoogleApiClient mGoogleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +59,15 @@ public class HomeActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(mViewPager);
 
         setupTabIcons();
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this, this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+        mGoogleApiClient.connect();
 
         account = getIntent().getParcelableExtra("Account");
     }
@@ -123,6 +138,12 @@ public class HomeActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.d(TAG, "onConnectionFailed:" + connectionResult);
+    }
 
-
+    public GoogleApiClient getGoogleApiClient() {
+        return mGoogleApiClient;
+    }
 }

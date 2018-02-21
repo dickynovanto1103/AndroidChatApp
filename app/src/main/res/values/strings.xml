@@ -12,4 +12,5 @@
     <string name="nama">Nama</string>
     <string name="user_email">email</string>
     <string name="user_nama">nama</string>
+    <string name="sign_out">Sign out</string>
 </resources>

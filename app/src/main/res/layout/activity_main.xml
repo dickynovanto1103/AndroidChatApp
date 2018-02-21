@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,27 +8,27 @@
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
     android:paddingTop="16dp"
+    android:background="#ffffff"
+
+
     tools:context="com.example.android.shakeandchat.MainActivity">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-        <TextView
-            android:id="@+id/status_textview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="" />
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_gravity="center"
+            android:layout_height="300dp"
+            android:layout_marginTop="70dp"
+            android:layout_marginBottom="20dp"
+            app:srcCompat="@drawable/halaman_utama" />
+
         <com.google.android.gms.common.SignInButton
             android:id="@+id/sign_in_button"
-            android:layout_width="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_width="112dp"
+            android:layout_below="@id/imageView"
             android:layout_height="wrap_content">
 
         </com.google.android.gms.common.SignInButton>
-        <Button
-            android:layout_width="110dp"
-            android:layout_height="wrap_content"
-            android:text="Sign Out"
-            android:id="@+id/signOutButton" />
-    </LinearLayout>
 
 </RelativeLayout>
