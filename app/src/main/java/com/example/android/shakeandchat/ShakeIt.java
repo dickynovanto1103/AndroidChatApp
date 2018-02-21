@@ -19,6 +19,8 @@ import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -40,6 +42,7 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
     private static final int LOCATION_REQUEST_PERMISSION = 99;
     private boolean firstShake;
     private Location myLocation;
+    private GoogleSignInAccount account;
 
     private void writeActiveUser(String name, String key){
         User activeUser = new User(name, key, myLocation.getLatitude(), myLocation.getLongitude());
@@ -62,7 +65,7 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
                     if (location != null){
                         myLocation = location;
                         Log.d("Location: ", location.toString());
-                        writeActiveUser("agung", "123");
+                        writeActiveUser(account.getDisplayName(), "123");
                     }
                 }
             });
@@ -70,21 +73,12 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
     }
 
     private void stopFindFriends(){
-        removeInactiveUser("agung");
+        removeInactiveUser(account.getDisplayName());
         findViewById(R.id.shake_logo).clearAnimation();
         mStatusText.setText(R.string.waiting_shake_status);
     }
 
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_shake_it);
-
-        mStatusText = (TextView) findViewById(R.id.status_shake);
-        firstShake = true;
-
+    private void setupSensor(){
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mShakeDetector = new ShakeDetector();
@@ -108,7 +102,9 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
         } else {
             mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         }
+    }
 
+    private void setupDB(){
         mDBRef = FirebaseDatabase.getInstance().getReference("active_users");
         ChildEventListener userListener = new ChildEventListener() {
             @Override
@@ -137,6 +133,19 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
             }
         };
         mDBRef.addChildEventListener(userListener);
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_shake_it);
+
+        mStatusText = (TextView) findViewById(R.id.status_shake);
+        firstShake = true;
+        setupSensor();
+        setupDB();
+
+        account = getIntent().getParcelableExtra("Account");
     }
 
     @Override
