@@ -54,6 +54,7 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "Sign out dipencet");
+                signOut(mGoogleApiClient);
             }
         });
 
@@ -101,6 +102,15 @@ public class ProfileFragment extends Fragment {
         super.onStop();
     }
 
-
+    private void signOut(GoogleApiClient mGoogleApiClient) {
+        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(new ResultCallback<Status>() {
+            @Override
+            public void onResult(@NonNull Status status) {
+                Toast.makeText(getContext(),"Logged Out",Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getContext(), MainActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
 
 }
