@@ -10,6 +10,8 @@ import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.util.Log;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -32,6 +34,7 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.O
     public Toolbar mToolbar;
     private ViewPager mViewPager;
     public TabLayout tabLayout;
+    private Button mButtonAddFriend;
     private int[] tabIcons_w = {
             R.drawable.icon_friends_w,
             R.drawable.icon_chats_w,
@@ -51,8 +54,8 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.O
 
         mSectionsPageAdapter = new SectionsPageAdapter(getSupportFragmentManager());
 
+        mButtonAddFriend = findViewById(R.id.addFriend);
         mToolbar = findViewById(R.id.toolbar);
-
         mViewPager = findViewById(R.id.container);
         setupViewPager(mViewPager);
 
@@ -119,18 +122,21 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.O
                 switch (position) {
                     case 0:
                         mToolbar.setTitle("Friends");
+                        mButtonAddFriend.setVisibility(View.VISIBLE);
                         tabLayout.getTabAt(0).setIcon(R.drawable.icon_friends);
                         tabLayout.getTabAt(1).setIcon(R.drawable.icon_chats_w);
                         tabLayout.getTabAt(2).setIcon(R.drawable.icon_profile_w);
                         break;
                     case 1:
                         mToolbar.setTitle("Chats");
+                        mButtonAddFriend.setVisibility(View.INVISIBLE);
                         tabLayout.getTabAt(0).setIcon(R.drawable.icon_friends_w);
                         tabLayout.getTabAt(1).setIcon(R.drawable.icon_chats);
                         tabLayout.getTabAt(2).setIcon(R.drawable.icon_profile_w);
                         break;
                     case 2:
                         mToolbar.setTitle("Profile");
+                        mButtonAddFriend.setVisibility(View.INVISIBLE);
                         tabLayout.getTabAt(0).setIcon(R.drawable.icon_friends_w);
                         tabLayout.getTabAt(1).setIcon(R.drawable.icon_chats_w);
                         tabLayout.getTabAt(2).setIcon(R.drawable.icon_profile);

@@ -5,21 +5,19 @@
 
     <ListView
         android:layout_width="wrap_content"
-        android:layout_height="400dp"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="102dp"
         android:id="@+id/listFriends"
     />
 
-    <Button
-        android:id="@+id/addFriend"
-        style="@android:style/Widget.DeviceDefault.Button.Small"
-        android:layout_width="400dp"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        android:background="@color/colorPrimary"
-        android:textColor="@color/colorAccent"
-        android:layout_height="100dp"
-        android:gravity="top|center"
-        android:paddingTop="10dp"
-        android:text="@string/add_friend" />
+    <!--<Button-->
+        <!--android:id="@+id/addFriend"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:background="@color/colorPrimary"-->
+        <!--android:textColor="@color/colorWhite"-->
+        <!--android:text="@string/add_friend"-->
+        <!--/>-->
 
 </RelativeLayout>
