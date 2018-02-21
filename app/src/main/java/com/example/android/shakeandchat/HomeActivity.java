@@ -108,11 +108,14 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.O
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
+                Log.d(TAG, "onPageScrolled-position: " + position);
+                Log.d(TAG, "onPageScrolled-positionOffset: " + positionOffset);
+                Log.d(TAG, "onPageScrolled-positionOffsetPixels: " + positionOffsetPixels);
             }
 
             @Override
             public void onPageSelected(int position) {
+                Log.d(TAG, "onPageSelected: " + position);
                 switch (position) {
                     case 0:
                         mToolbar.setTitle("Friends");
@@ -138,7 +141,7 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.O
 
             @Override
             public void onPageScrollStateChanged(int state) {
-
+                Log.d(TAG, "onPageScrollStateChanged: " + state);
             }
         });
         viewPager.setAdapter(adapter);
