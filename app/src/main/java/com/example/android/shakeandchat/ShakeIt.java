@@ -1,34 +1,89 @@
 package com.example.android.shakeandchat;
 
+import android.*;
+import android.Manifest;
 import android.content.Context;
+import android.content.IntentSender;
+import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
+import android.location.Location;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.example.android.shakeandchat.R;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-public class ShakeIt extends AppCompatActivity {
+public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback{
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
     private ShakeDetector mShakeDetector;
     private TextView mStatusText;
-    private FirebaseDatabase mDatabase;
     private DatabaseReference mDBRef;
+    private FusedLocationProviderClient mFusedLocationClient;
+    private static final int LOCATION_REQUEST_PERMISSION = 99;
+    private boolean firstShake;
+    private Location myLocation;
+
+    private void writeActiveUser(String name, String key){
+        User activeUser = new User(name, key, myLocation.getLatitude(), myLocation.getLongitude());
+        mDBRef.child(name).setValue(activeUser);
+    }
+
+    private void removeInactiveUser(String name){
+        mDBRef.child(name).removeValue();
+    }
+
+    private void findingFriends(){
+        final Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
+        findViewById(R.id.shake_logo).startAnimation(shake);
+        mStatusText.setText(R.string.shaking_status);
+
+        if (firstShake){
+            mFusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    if (location != null){
+                        myLocation = location;
+                        Log.d("Location: ", location.toString());
+                        writeActiveUser("agung", "123");
+                    }
+                }
+            });
+        }
+    }
+
+    private void stopFindFriends(){
+        removeInactiveUser("agung");
+        findViewById(R.id.shake_logo).clearAnimation();
+        mStatusText.setText(R.string.waiting_shake_status);
+    }
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shake_it);
 
-        final Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
         mStatusText = (TextView) findViewById(R.id.status_shake);
+        firstShake = true;
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -37,19 +92,61 @@ public class ShakeIt extends AppCompatActivity {
             @Override
             public void onShake(int count) {
                 if (count > 0){
-                    findViewById(R.id.shake_logo).startAnimation(shake);
-                    mStatusText.setText(R.string.shaking_status);
+                    findingFriends();
+                    firstShake = false;
                 } else {
-                    findViewById(R.id.shake_logo).clearAnimation();
-                    mStatusText.setText(R.string.waiting_shake_status);
+                    stopFindFriends();
+                    firstShake = true;
                 }
             }
         });
 
-        mDatabase = FirebaseDatabase.getInstance();
-        mDBRef = mDatabase.getReference("user");
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_PERMISSION);
+        } else {
+            mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        }
 
-        Log.d("FirebaseDB: ", mDBRef.toString());
+        mDBRef = FirebaseDatabase.getInstance().getReference("active_users");
+        ChildEventListener userListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Log.d("onChildAdded: ", dataSnapshot.getKey());
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                Log.d("onChildChanged: ", dataSnapshot.getKey());
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                Log.d("onChildRemoved: ", dataSnapshot.getKey());
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                Log.d("onChildMoved: ", dataSnapshot.getKey());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w("Error: ", "postComments:onCancelled", databaseError.toException());
+            }
+        };
+        mDBRef.addChildEventListener(userListener);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults){
+        if (requestCode == LOCATION_REQUEST_PERMISSION){
+            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+            }
+        }
     }
 
     @Override

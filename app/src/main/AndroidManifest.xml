@@ -3,6 +3,7 @@
     package="com.example.android.shakeandchat">
 
     <uses-feature android:name="android.hardware.sensor.accelerometer" android:required="true" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
     <application
         android:allowBackup="true"
@@ -51,6 +52,10 @@
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>
         </service>
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
     </application>
 
 </manifest>

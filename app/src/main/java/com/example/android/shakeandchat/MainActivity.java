@@ -19,7 +19,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener{
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
     SignInButton signInButton;
     Button signOutButton;
     TextView statusTextView;
@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 .requestEmail()
                 .build();
         mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this,this)
+                .enableAutoManage(this, this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
         statusTextView = (TextView) findViewById(R.id.status_textview);
@@ -52,8 +52,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     @Override
-    public void onClick(View v){
-        switch (v.getId()){
+    public void onClick(View v) {
+        switch (v.getId()) {
             case R.id.sign_in_button:
                 signIn();
                 break;
@@ -63,40 +63,42 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
     }
 
-    private void signIn(){
+    private void signIn() {
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data){
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         //result returned
-        if(requestCode == RC_SIGN_IN){
+        if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             handleSignInResult(result);
         }
     }
-    private void handleSignInResult(GoogleSignInResult result){
-        Log.d(TAG, "handleSignInResult:"+result.isSuccess());
-        if(result.isSuccess()){
+
+    private void handleSignInResult(GoogleSignInResult result) {
+        Log.d(TAG, "handleSignInResult:" + result.isSuccess());
+        if (result.isSuccess()) {
             //sign in success
             GoogleSignInAccount acct = result.getSignInAccount();
-            statusTextView.setText("Hello, "+acct.getDisplayName());
-            Intent intent = new Intent(this, ShakeIt.class);
+            statusTextView.setText("Hello, " + acct.getDisplayName());
+            Intent intent = new Intent(this, HomeActivity.class);
+            intent.putExtra("Account", acct);
             startActivity(intent);
             finish();
-        }else{
+        } else {
         }
     }
 
     @Override
-    public void onConnectionFailed(ConnectionResult connectionResult){
-        Log.d(TAG, "onConnectionFailed:"+connectionResult);
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        Log.d(TAG, "onConnectionFailed:" + connectionResult);
     }
 
-    private void signOut(){
+    private void signOut() {
         Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(new ResultCallback<Status>() {
             @Override
             public void onResult(@NonNull Status status) {
