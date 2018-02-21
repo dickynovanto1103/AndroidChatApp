@@ -9,7 +9,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toolbar;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+
+import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 
 /**
  * Created by um on 02/20/18.
@@ -18,43 +25,56 @@ import android.widget.Toolbar;
 public class ProfileFragment extends Fragment {
     private static final String TAG = "ProfileFragment";
 
+    private TextView textView_nama;
+    private TextView textView_email;
+    private ImageView imageView_photo;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.profile_fragment, container, false);
         Log.d(TAG, "onCreateView_Profile");
+
+        textView_nama = view.findViewById(R.id.dp_nama);
+        textView_email = view.findViewById(R.id.dp_email);
+        imageView_photo = view.findViewById(R.id.photo_profile);
+
         return view;
+    }
+
+    public void setProfile(String name, String email, String photoUrl) {
+        Log.d(TAG, "Masuk setNameMail");
+        textView_nama.setText(name);
+        textView_email.setText(email);
+
+        int radius = 30;
+        int margin = 0;
+        Glide.with(this).load(photoUrl)
+            .thumbnail(0.5f)
+            .crossFade()
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .bitmapTransform(new RoundedCornersTransformation(getContext(), radius, margin))
+            .into(imageView_photo);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume_Profile");
-        ((HomeActivity) getActivity()).mToolbar.setTitle("Chats");
-        ((HomeActivity) getActivity()).tabLayout.getTabAt(0).setIcon(R.drawable.icon_friends_w);
-        ((HomeActivity) getActivity()).tabLayout.getTabAt(1).setIcon(R.drawable.icon_chats);
-        ((HomeActivity) getActivity()).tabLayout.getTabAt(2).setIcon(R.drawable.icon_profile_w);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        Log.d(TAG, "onPause_Profile");
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        Log.d(TAG, "onStart_Profile");
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        Log.d(TAG, "onStop_Profile");
-        ((HomeActivity) getActivity()).mToolbar.setTitle("Friends");
-        ((HomeActivity) getActivity()).tabLayout.getTabAt(0).setIcon(R.drawable.icon_friends);
-        ((HomeActivity) getActivity()).tabLayout.getTabAt(1).setIcon(R.drawable.icon_chats_w);
-        ((HomeActivity) getActivity()).tabLayout.getTabAt(2).setIcon(R.drawable.icon_profile_w);
     }
+
 }

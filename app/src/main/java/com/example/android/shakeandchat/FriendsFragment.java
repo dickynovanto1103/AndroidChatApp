@@ -31,10 +31,6 @@ public class FriendsFragment extends Fragment {
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume_Friends");
-        ((HomeActivity) getActivity()).mToolbar.setTitle("Chats");
-        ((HomeActivity) getActivity()).tabLayout.getTabAt(0).setIcon(R.drawable.icon_friends_w);
-        ((HomeActivity) getActivity()).tabLayout.getTabAt(1).setIcon(R.drawable.icon_chats);
-        ((HomeActivity) getActivity()).tabLayout.getTabAt(2).setIcon(R.drawable.icon_profile_w);
     }
 
     @Override
@@ -53,9 +49,5 @@ public class FriendsFragment extends Fragment {
     public void onStop() {
         super.onStop();
         Log.d(TAG, "onStop_Friends");
-        ((HomeActivity) getActivity()).mToolbar.setTitle("Profile");
-        ((HomeActivity) getActivity()).tabLayout.getTabAt(0).setIcon(R.drawable.icon_friends_w);
-        ((HomeActivity) getActivity()).tabLayout.getTabAt(1).setIcon(R.drawable.icon_chats_w);
-        ((HomeActivity) getActivity()).tabLayout.getTabAt(2).setIcon(R.drawable.icon_profile);
     }
 }

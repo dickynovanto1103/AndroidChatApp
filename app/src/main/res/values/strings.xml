@@ -9,4 +9,7 @@
     <string name="shakeandchatdesc">ShakeAndChat logo</string>
     <string name="waiting_shake_status">Waiting for shake</string>
     <string name="shaking_status">Finding friend…</string>
+    <string name="nama">Nama</string>
+    <string name="user_email">email</string>
+    <string name="user_nama">nama</string>
 </resources>
