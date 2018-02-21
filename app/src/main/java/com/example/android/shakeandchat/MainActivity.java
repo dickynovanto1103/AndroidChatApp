@@ -18,6 +18,7 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
     SignInButton signInButton;
@@ -85,7 +86,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             //sign in success
             GoogleSignInAccount acct = result.getSignInAccount();
             statusTextView.setText("Hello, " + acct.getDisplayName());
+
+            String token = FirebaseInstanceId.getInstance().getToken();
+            Log.i("FIREBASE", "FCM Registration token: "+ token);
             Intent intent = new Intent(this, HomeActivity.class);
+//            Intent intent = new Intent(this, RegistrationIntentService.class);
             intent.putExtra("Account", acct);
             startActivity(intent);
             finish();
