@@ -8,27 +8,34 @@
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
     android:paddingTop="16dp"
-    android:background="#ffffff"
-
-
+    android:background="@drawable/background_image"
     tools:context="com.example.android.shakeandchat.MainActivity">
 
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="match_parent"
-            android:layout_gravity="center"
-            android:layout_height="300dp"
-            android:layout_marginTop="70dp"
-            android:layout_marginBottom="20dp"
-            app:srcCompat="@drawable/halaman_utama" />
-
-        <com.google.android.gms.common.SignInButton
-            android:id="@+id/sign_in_button"
+        <RelativeLayout
+            android:layout_width="300dp"
+            android:layout_height="400dp"
+            android:layout_centerVertical="true"
             android:layout_centerHorizontal="true"
-            android:layout_width="112dp"
-            android:layout_below="@id/imageView"
-            android:layout_height="wrap_content">
+            android:background="@drawable/layout_bg"
+            android:elevation="10dp"
+            >
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_height="300dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="10dp"
+                    app:srcCompat="@drawable/halaman_utama" />
 
-        </com.google.android.gms.common.SignInButton>
+                <com.google.android.gms.common.SignInButton
+                    android:id="@+id/sign_in_button"
+                    android:layout_centerHorizontal="true"
+                    android:layout_width="189dp"
+                    android:layout_below="@id/imageView"
+                    android:layout_height="wrap_content">
+
+                </com.google.android.gms.common.SignInButton>
+        </RelativeLayout>
 
 </RelativeLayout>

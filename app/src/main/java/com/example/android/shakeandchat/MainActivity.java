@@ -47,12 +47,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 .enableAutoManage(this, this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
+
         signInButton = (SignInButton) findViewById(R.id.sign_in_button);
         signInButton.setOnClickListener(this);
 
-//        Intent intent = new Intent(this, ShakeIt.class);
-//        startActivity(intent);
-//        finish();
     }
 
     @Override

@@ -10,14 +10,4 @@
         android:id="@+id/listFriends"
     />
 
-    <!--<Button-->
-        <!--android:id="@+id/addFriend"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_alignParentBottom="true"-->
-        <!--android:background="@color/colorPrimary"-->
-        <!--android:textColor="@color/colorWhite"-->
-        <!--android:text="@string/add_friend"-->
-        <!--/>-->
-
 </RelativeLayout>
