@@ -24,6 +24,8 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 
+import java.util.Objects;
+
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 
 /**
@@ -68,18 +70,22 @@ public class ProfileFragment extends Fragment {
     }
 
     public void setProfile(String name, String email, String photoUrl) {
-        Log.d(TAG, "Masuk setNameMail");
+        Log.d(TAG, "Masuk setProfile");
         textView_nama.setText(name);
         textView_email.setText(email);
 
-        int radius = 30;
-        int margin = 0;
-        Glide.with(this).load(photoUrl)
-            .thumbnail(0.5f)
-            .crossFade()
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .bitmapTransform(new RoundedCornersTransformation(getContext(), radius, margin))
-            .into(imageView_photo);
+        if (photoUrl.equals("default")) {
+            imageView_photo.setImageResource(R.drawable.default_profile);
+        } else {
+            int radius = 30;
+            int margin = 0;
+            Glide.with(this).load(photoUrl)
+                    .thumbnail(0.5f)
+                    .crossFade()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .bitmapTransform(new RoundedCornersTransformation(getContext(), radius, margin))
+                    .into(imageView_photo);
+        }
     }
 
     @Override

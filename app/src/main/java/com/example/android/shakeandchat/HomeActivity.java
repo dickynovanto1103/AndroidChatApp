@@ -1,5 +1,6 @@
 package com.example.android.shakeandchat;
 
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -83,7 +84,13 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.O
 
         String acc_name = account.getDisplayName();
         String acc_email = account.getEmail();
-        String photoUrl = account.getPhotoUrl().toString();
+        String photoUrl;
+        Uri checkPhoto = account.getPhotoUrl();
+        if (checkPhoto != null) {
+            photoUrl = checkPhoto.toString();
+        } else {
+            photoUrl = "default";
+        }
         Log.d(TAG, "photoURL: " + photoUrl + ", Nama: " + acc_name + ", Email: " + acc_email);
 
         prof_frag.setProfile(acc_name, acc_email, photoUrl);
