@@ -47,9 +47,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(GOOGLE_ACCOUNT_KEY, MODE_PRIVATE);
         String id = sharedPreferences.getString("id", null);
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
 
-        if (id != null){
-            GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        if (id != null && account != null){
             Intent intent = new Intent(this, HomeActivity.class);
             intent.putExtra("Account", account);
             startActivity(intent);
