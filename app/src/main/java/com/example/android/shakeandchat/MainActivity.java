@@ -1,6 +1,7 @@
 package com.example.android.shakeandchat;
 
 import android.content.Intent;
+import android.provider.SyncStateContract;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,7 +19,20 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingService;
+import com.google.firebase.messaging.RemoteMessage;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.FileInputStream;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
     SignInButton signInButton;
@@ -32,6 +46,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -47,9 +63,65 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         signOutButton = (Button) findViewById(R.id.signOutButton);
         signOutButton.setOnClickListener(this);
 
+//        FirebaseDatabase database = FirebaseDatabase.getInstance();
+//        DatabaseReference myRef = database.getReference("pesan");
+//
+//        myRef.setValue("Hello world");
+        FirebaseMessaging firebaseMessaging = FirebaseMessaging.getInstance();
+        firebaseMessaging.subscribeToTopic();
 //        Intent intent = new Intent(this, ShakeIt.class);
 //        startActivity(intent);
 //        finish();
+    }
+
+    private void sendFCMPush() {
+
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+        httpClient.addInterceptor(new Interceptor() {
+            @Override
+            public okhttp3.Response intercept(Chain chain) throws IOException {
+                Request original = chain.request();
+
+                // Request customization: add request headers
+                Request.Builder requestBuilder = original.newBuilder()
+                        .header("Authorization", "key="+Const.FIREBASE_LEGACY_SERVER_KEY); // <-- this is the important line
+                Request request = requestBuilder.build();
+                return chain.proceed(request);
+            }
+        });
+
+        httpClient.addInterceptor(logging);
+        OkHttpClient client = httpClient.build();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://fcm.googleapis.com/")//url of FCM message server
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create())//use for convert JSON file into object
+                .build();
+
+        // prepare call in Retrofit 2.0
+        FirebaseAPI firebaseAPI = retrofit.create(FirebaseAPI.class);
+
+        //for messaging server
+        NotifyData notifydata = new NotifyData("Chatting", msg);
+
+        Call<Message> call2 = firebaseAPI.sendMessage(new Message(token, notifydata));
+
+        call2.enqueue(new Callback<Message>() {
+            @Override
+            public void onResponse(Call<Message> call, retrofit2.Response<Message> response) {
+                Log.e("#@ SUCCES #E$#", response.body().toString());
+            }
+
+            @Override
+            public void onFailure(Call<Message> call, Throwable t) {
+
+                Log.e("E$ FAILURE E$#", t.getMessage());
+            }
+        });
     }
 
     @Override
@@ -89,8 +161,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
             String token = FirebaseInstanceId.getInstance().getToken();
             Log.i("FIREBASE", "FCM Registration token: "+ token);
+
             Intent intent = new Intent(this, HomeActivity.class);
-//            Intent intent = new Intent(this, RegistrationIntentService.class);
             intent.putExtra("Account", acct);
             startActivity(intent);
             finish();
