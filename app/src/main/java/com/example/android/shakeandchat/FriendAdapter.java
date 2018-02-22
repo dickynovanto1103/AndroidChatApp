@@ -15,9 +15,9 @@ import java.util.ArrayList;
 
 public class FriendAdapter extends ArrayAdapter {
     private final Activity context;
-    private ArrayList<User> user;
+    private ArrayList<ActiveUser> user;
 
-    public FriendAdapter(Activity context, ArrayList<User> user) {
+    public FriendAdapter(Activity context, ArrayList<ActiveUser> user) {
         super(context, R.layout.friends_layout, user);
         this.context = context;
         this.user = user;

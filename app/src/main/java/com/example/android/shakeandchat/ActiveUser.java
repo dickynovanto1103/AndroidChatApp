@@ -4,19 +4,21 @@ package com.example.android.shakeandchat;
  * Created by Pratama Agung on 2/21/2018.
  */
 
-public class User {
+public class ActiveUser {
     public String username;
-    public String key;
+    public String email;
+    public String displayImage;
     public double latitude;
     public double longitude;
 
-    public User(){
+    public ActiveUser(){
 
     }
 
-    public User(String username, String key, double latitude, double longitude){
+    public ActiveUser(String username, String email, String displayImage, double latitude, double longitude){
         this.username = username;
-        this.key = key;
+        this.email = email;
+        this.displayImage = displayImage;
         this.latitude = latitude;
         this.longitude = longitude;
     }

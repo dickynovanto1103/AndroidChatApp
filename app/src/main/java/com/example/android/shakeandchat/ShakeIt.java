@@ -1,10 +1,7 @@
 package com.example.android.shakeandchat;
 
-import android.*;
 import android.Manifest;
-import android.app.ListActivity;
 import android.content.Context;
-import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
@@ -41,14 +38,14 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
     private DatabaseReference mDBRef;
     private FusedLocationProviderClient mFusedLocationClient;
     private static final int LOCATION_REQUEST_PERMISSION = 99;
-    private boolean firstShake;
+    private boolean isShaking;
     private Location myLocation;
     private GoogleSignInAccount account;
-    private ArrayList<User> foundUser;
+    private ArrayList<ActiveUser> foundUser;
     private FriendAdapter friendAdapter;
 
-    private void writeActiveUser(String name, String key){
-        User activeUser = new User(name, key, myLocation.getLatitude(), myLocation.getLongitude());
+    private void writeActiveUser(String name, String email, String displayImage){
+        ActiveUser activeUser = new ActiveUser(name, email, displayImage, myLocation.getLatitude(), myLocation.getLongitude());
         mDBRef.child(name).setValue(activeUser);
     }
 
@@ -61,14 +58,14 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
         findViewById(R.id.shake_logo).startAnimation(shake);
         mStatusText.setText(R.string.shaking_status);
 
-        if (firstShake){
+        if (!isShaking){
             mFusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(Location location) {
                     if (location != null){
                         myLocation = location;
                         Log.d("Location: ", location.toString());
-                        writeActiveUser(account.getDisplayName(), "123");
+                        writeActiveUser(account.getDisplayName(), account.getEmail(), account.getPhotoUrl().toString());
                     }
                 }
             });
@@ -78,6 +75,7 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
     private void stopFindFriends(){
         removeInactiveUser(account.getDisplayName());
         findViewById(R.id.shake_logo).clearAnimation();
+        setDisplayFoundFriend(false);
         mStatusText.setText(R.string.waiting_shake_status);
     }
 
@@ -90,10 +88,10 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
             public void onShake(int count) {
                 if (count > 0){
                     findingFriends();
-                    firstShake = false;
+                    isShaking = true;
                 } else {
                     stopFindFriends();
-                    firstShake = true;
+                    isShaking = false;
                 }
             }
         });
@@ -112,12 +110,13 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
         ChildEventListener userListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                User addedUser = dataSnapshot.getValue(User.class);
+                Log.d("shaking ", (Boolean.toString(isShaking)));
+                ActiveUser addedUser = dataSnapshot.getValue(ActiveUser.class);
                 if (addedUser.username != account.getDisplayName()){
                     foundUser.add(addedUser);
                     friendAdapter.notifyDataSetChanged();
                 }
-                if(foundUser.size() == 1) setDisplayFoundFriend(true);
+                if(foundUser.size() >= 1 && isShaking) setDisplayFoundFriend(true);
             }
 
             @Override
@@ -127,7 +126,7 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-                User removedUser = dataSnapshot.getValue(User.class);
+                ActiveUser removedUser = dataSnapshot.getValue(ActiveUser.class);
                 boolean found = false;
                 int i = 0;
                 while(!found && i < foundUser.size()){
@@ -172,11 +171,11 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
         setContentView(R.layout.activity_shake_it);
 
         mStatusText = (TextView) findViewById(R.id.status_shake);
-        firstShake = true;
+        isShaking = false;
         setupSensor();
         setupDB();
 
-        foundUser = new ArrayList<User>();
+        foundUser = new ArrayList<ActiveUser>();
         account = getIntent().getParcelableExtra("Account");
         friendAdapter = new FriendAdapter(this, foundUser);
         ListView listView = (ListView) findViewById(R.id.found_friend);
