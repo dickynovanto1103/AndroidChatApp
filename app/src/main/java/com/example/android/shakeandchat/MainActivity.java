@@ -20,6 +20,8 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.Serializable;
 
@@ -83,6 +85,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         if (result.isSuccess()) {
             //sign in success
             GoogleSignInAccount acct = result.getSignInAccount();
+            //kirim data akun ke firebase database
+            Log.d("debugKirimFirebase", "lagi mau kirim");
+            FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+            DatabaseReference reference = firebaseDatabase.getReference("listToken");
+            reference.setValue(acct.getDisplayName());
+            Log.d("debugKirimFirebase", "sudah kirim");
+
             Intent intent = new Intent(this, HomeActivity.class);
             intent.putExtra("Account", acct);
             startActivity(intent);
