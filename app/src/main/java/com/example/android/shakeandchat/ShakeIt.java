@@ -117,7 +117,7 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
                     foundUser.add(addedUser);
                     friendAdapter.notifyDataSetChanged();
                 }
-                if(foundUser.size() == 1) findViewById(R.id.found_friend).setVisibility(View.VISIBLE);
+                if(foundUser.size() == 1) setDisplayFoundFriend(true);
             }
 
             @Override
@@ -138,7 +138,7 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
                     i++;
                 }
                 if (found) friendAdapter.notifyDataSetChanged();
-                if (foundUser.isEmpty()) findViewById(R.id.found_friend).setVisibility(View.GONE);
+                if (foundUser.isEmpty()) setDisplayFoundFriend(false);
             }
 
             @Override
@@ -152,6 +152,18 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
             }
         };
         mDBRef.addChildEventListener(userListener);
+    }
+
+    private void setDisplayFoundFriend(boolean view){
+        if (view){
+            findViewById(R.id.found_friend).setVisibility(View.VISIBLE);
+            findViewById(R.id.shake_logo).setVisibility(View.GONE);
+            findViewById(R.id.status_shake).setVisibility(View.GONE);
+        } else {
+            findViewById(R.id.found_friend).setVisibility(View.GONE);
+            findViewById(R.id.shake_logo).setVisibility(View.VISIBLE);
+            findViewById(R.id.status_shake).setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
