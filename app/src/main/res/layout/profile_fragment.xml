@@ -33,9 +33,21 @@
 
     <ImageView
         android:id="@+id/photo_profile"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="31dp"
+        android:layout_marginTop="61dp"
         app:srcCompat="@android:drawable/ic_menu_report_image" />
+
+    <Button
+        android:id="@+id/signOutButton"
+        style="@android:style/Widget.DeviceDefault.Button.Small"
+        android:layout_width="160dp"
+        android:layout_marginTop="40dp"
+        android:layout_centerHorizontal="true"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/colorWhite"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/dp_email"
+        android:text="@string/sign_out" />
 </RelativeLayout>

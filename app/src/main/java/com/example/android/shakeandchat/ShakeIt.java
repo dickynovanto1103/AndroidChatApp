@@ -2,6 +2,7 @@ package com.example.android.shakeandchat;
 
 import android.*;
 import android.Manifest;
+import android.app.ListActivity;
 import android.content.Context;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
@@ -14,21 +15,23 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.ArrayList;
 
 public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback{
     private SensorManager mSensorManager;
@@ -40,6 +43,9 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
     private static final int LOCATION_REQUEST_PERMISSION = 99;
     private boolean firstShake;
     private Location myLocation;
+    private GoogleSignInAccount account;
+    private ArrayList<User> foundUser;
+    private FriendAdapter friendAdapter;
 
     private void writeActiveUser(String name, String key){
         User activeUser = new User(name, key, myLocation.getLatitude(), myLocation.getLongitude());
@@ -62,7 +68,7 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
                     if (location != null){
                         myLocation = location;
                         Log.d("Location: ", location.toString());
-                        writeActiveUser("agung", "123");
+                        writeActiveUser(account.getDisplayName(), "123");
                     }
                 }
             });
@@ -70,21 +76,12 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
     }
 
     private void stopFindFriends(){
-        removeInactiveUser("agung");
+        removeInactiveUser(account.getDisplayName());
         findViewById(R.id.shake_logo).clearAnimation();
         mStatusText.setText(R.string.waiting_shake_status);
     }
 
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_shake_it);
-
-        mStatusText = (TextView) findViewById(R.id.status_shake);
-        firstShake = true;
-
+    private void setupSensor(){
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mShakeDetector = new ShakeDetector();
@@ -108,12 +105,19 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
         } else {
             mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         }
+    }
 
+    private void setupDB(){
         mDBRef = FirebaseDatabase.getInstance().getReference("active_users");
         ChildEventListener userListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Log.d("onChildAdded: ", dataSnapshot.getKey());
+                User addedUser = dataSnapshot.getValue(User.class);
+                if (addedUser.username != account.getDisplayName()){
+                    foundUser.add(addedUser);
+                    friendAdapter.notifyDataSetChanged();
+                }
+                if(foundUser.size() == 1) setDisplayFoundFriend(true);
             }
 
             @Override
@@ -123,7 +127,18 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-                Log.d("onChildRemoved: ", dataSnapshot.getKey());
+                User removedUser = dataSnapshot.getValue(User.class);
+                boolean found = false;
+                int i = 0;
+                while(!found && i < foundUser.size()){
+                    if(foundUser.get(i).username == removedUser.username) {
+                        foundUser.remove(i);
+                        found = true;
+                    }
+                    i++;
+                }
+                if (found) friendAdapter.notifyDataSetChanged();
+                if (foundUser.isEmpty()) setDisplayFoundFriend(false);
             }
 
             @Override
@@ -137,6 +152,35 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
             }
         };
         mDBRef.addChildEventListener(userListener);
+    }
+
+    private void setDisplayFoundFriend(boolean view){
+        if (view){
+            findViewById(R.id.found_friend).setVisibility(View.VISIBLE);
+            findViewById(R.id.shake_logo).setVisibility(View.GONE);
+            findViewById(R.id.status_shake).setVisibility(View.GONE);
+        } else {
+            findViewById(R.id.found_friend).setVisibility(View.GONE);
+            findViewById(R.id.shake_logo).setVisibility(View.VISIBLE);
+            findViewById(R.id.status_shake).setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_shake_it);
+
+        mStatusText = (TextView) findViewById(R.id.status_shake);
+        firstShake = true;
+        setupSensor();
+        setupDB();
+
+        foundUser = new ArrayList<User>();
+        account = getIntent().getParcelableExtra("Account");
+        friendAdapter = new FriendAdapter(this, foundUser);
+        ListView listView = (ListView) findViewById(R.id.found_friend);
+        listView.setAdapter(friendAdapter);
     }
 
     @Override

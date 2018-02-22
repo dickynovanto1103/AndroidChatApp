@@ -3,10 +3,14 @@ package com.example.android.shakeandchat;
 import android.content.Intent;
 import android.provider.SyncStateContract;
 import android.support.annotation.NonNull;
+import android.support.constraint.solver.widgets.ConstraintWidget;
+import android.support.constraint.solver.widgets.Snapshot;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -21,23 +25,34 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.FileInputStream;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.io.Serializable;
+
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
     SignInButton signInButton;
-    Button signOutButton;
-    TextView statusTextView;
     GoogleApiClient mGoogleApiClient;
     private static final String TAG = "SignInActivity";
     private static final int RC_SIGN_IN = 9001;
@@ -45,6 +60,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //Remove title bar
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        //Remove notification bar
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        //set content view AFTER ABOVE sequence (to avoid crash)
         setContentView(R.layout.activity_main);
 
 
@@ -56,72 +77,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 .enableAutoManage(this, this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
-        statusTextView = (TextView) findViewById(R.id.status_textview);
+
         signInButton = (SignInButton) findViewById(R.id.sign_in_button);
         signInButton.setOnClickListener(this);
 
-        signOutButton = (Button) findViewById(R.id.signOutButton);
-        signOutButton.setOnClickListener(this);
-
-//        FirebaseDatabase database = FirebaseDatabase.getInstance();
-//        DatabaseReference myRef = database.getReference("pesan");
-//
-//        myRef.setValue("Hello world");
-        FirebaseMessaging firebaseMessaging = FirebaseMessaging.getInstance();
-        firebaseMessaging.subscribeToTopic();
-//        Intent intent = new Intent(this, ShakeIt.class);
-//        startActivity(intent);
-//        finish();
-    }
-
-    private void sendFCMPush() {
-
-        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-
-        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
-        httpClient.addInterceptor(new Interceptor() {
-            @Override
-            public okhttp3.Response intercept(Chain chain) throws IOException {
-                Request original = chain.request();
-
-                // Request customization: add request headers
-                Request.Builder requestBuilder = original.newBuilder()
-                        .header("Authorization", "key="+Const.FIREBASE_LEGACY_SERVER_KEY); // <-- this is the important line
-                Request request = requestBuilder.build();
-                return chain.proceed(request);
-            }
-        });
-
-        httpClient.addInterceptor(logging);
-        OkHttpClient client = httpClient.build();
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://fcm.googleapis.com/")//url of FCM message server
-                .client(client)
-                .addConverterFactory(GsonConverterFactory.create())//use for convert JSON file into object
-                .build();
-
-        // prepare call in Retrofit 2.0
-        FirebaseAPI firebaseAPI = retrofit.create(FirebaseAPI.class);
-
-        //for messaging server
-        NotifyData notifydata = new NotifyData("Chatting", msg);
-
-        Call<Message> call2 = firebaseAPI.sendMessage(new Message(token, notifydata));
-
-        call2.enqueue(new Callback<Message>() {
-            @Override
-            public void onResponse(Call<Message> call, retrofit2.Response<Message> response) {
-                Log.e("#@ SUCCES #E$#", response.body().toString());
-            }
-
-            @Override
-            public void onFailure(Call<Message> call, Throwable t) {
-
-                Log.e("E$ FAILURE E$#", t.getMessage());
-            }
-        });
     }
 
     @Override
@@ -129,9 +88,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         switch (v.getId()) {
             case R.id.sign_in_button:
                 signIn();
-                break;
-            case R.id.signOutButton:
-                signOut();
                 break;
         }
     }
@@ -157,10 +113,74 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         if (result.isSuccess()) {
             //sign in success
             GoogleSignInAccount acct = result.getSignInAccount();
-            statusTextView.setText("Hello, " + acct.getDisplayName());
 
+
+
+
+            //kirim data akun ke firebase database
+            FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+            final DatabaseReference reference = firebaseDatabase.getReference("listToken");
+
+
+            String name = acct.getDisplayName();
+            String email = acct.getEmail();
             String token = FirebaseInstanceId.getInstance().getToken();
             Log.i("FIREBASE", "FCM Registration token: "+ token);
+
+            UserWithFirebaseToken userWithFirebaseToken = new UserWithFirebaseToken(name, email, token);
+
+            reference.push().setValue(userWithFirebaseToken);
+
+            Log.d("hasil", "berhasil masukkan");
+
+            //testing baca dari database
+            reference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Log.d("test list", "list diterima");
+
+//                    HashMap<String, UserWithFirebaseToken> mapTemp = new HashMap<>();
+//
+//                    int i = 0;
+//                    for(DataSnapshot anak: dataSnapshot.getChildren()) {
+//                        String hasil = anak.getValue().toString();
+//                        //parse
+//
+//                        String name = String.valueOf(anak.child("name").getValue());
+//                        String email = String.valueOf(anak.child("email").getValue());
+//                        String firebaseToken = String.valueOf(anak.child("firebaseToken").getValue());
+//                        UserWithFirebaseToken user = new UserWithFirebaseToken(name,email,firebaseToken);
+//                        Integer indeks = new Integer(i);
+//                        mapTemp.put(indeks.toString(), user);
+//                        i++;
+//                        Log.d("yang dipush: ", "i: "+ i +" yang dipush email: " + email);
+//                    }
+
+
+//                    for(i = 0; i < s.size(); i++) {
+//                        List<HashMap<String, Object>> daftar = s.get(i);
+//                        for(int j = 0; j < daftar.size(); j++) {
+//                            HashMap<String, Object> map1 = daftar.get(i);
+//
+//                            Integer angka = new Integer(j);
+//                            map.put(angka.toString(), map1.get(angka.toString()));
+//                        }
+//                    }
+//                    Integer index = new Integer(i);
+//                    mapTemp.put(index.toString(), data);
+//                    Log.d("push", "yang dipush email: "+data.getEmail());
+//                    reference.setValue(mapTemp);
+
+
+//                    Log.d("hasil", "hasil retrieve: "+ dataSnapshot.getValue());
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.d("gagal", "gagal ambil data");
+                }
+            });
+
 
             Intent intent = new Intent(this, HomeActivity.class);
             intent.putExtra("Account", acct);
@@ -175,12 +195,4 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
     }
 
-    private void signOut() {
-        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(new ResultCallback<Status>() {
-            @Override
-            public void onResult(@NonNull Status status) {
-                statusTextView.setText("Signed out");
-            }
-        });
-    }
 }

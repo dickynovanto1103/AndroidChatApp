@@ -42,4 +42,14 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
+    <Button
+        android:id="@+id/addFriend"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/colorWhite"
+        android:text="@string/add_friend"
+        />
+
 </android.support.design.widget.CoordinatorLayout>
