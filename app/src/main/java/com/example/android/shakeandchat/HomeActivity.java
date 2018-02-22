@@ -1,5 +1,7 @@
 package com.example.android.shakeandchat;
 
+import android.content.Intent;
+import android.icu.lang.UCharacter;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
@@ -74,6 +76,17 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.O
         mGoogleApiClient.connect();
 
         account = getIntent().getParcelableExtra("Account");
+
+        Button addFriend = (Button) findViewById(R.id.addFriend);
+        addFriend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent  intent = new Intent(view.getContext(), ShakeIt.class);
+                intent.putExtra("Account", account);
+                startActivity(intent);
+                finish();
+            }
+        });
     }
 
     private void setupTabIcons() {
