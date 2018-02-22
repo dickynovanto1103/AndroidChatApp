@@ -65,7 +65,9 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
                     if (location != null){
                         myLocation = location;
                         Log.d("Location: ", location.toString());
-                        writeActiveUser(account.getDisplayName(), account.getEmail(), account.getPhotoUrl().toString());
+                        String displayImage = account.getPhotoUrl().toString();
+                        if(displayImage == null) displayImage = "default";
+                        writeActiveUser(account.getDisplayName(), account.getEmail(), displayImage);
                     }
                 }
             });
