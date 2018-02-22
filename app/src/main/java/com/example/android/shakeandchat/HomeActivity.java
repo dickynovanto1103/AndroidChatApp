@@ -1,6 +1,13 @@
 package com.example.android.shakeandchat;
 
+import android.annotation.SuppressLint;
+import android.app.Service;
 import android.content.Intent;
+import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.icu.lang.UCharacter;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -28,7 +35,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 
 
-public class HomeActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
+public class HomeActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, SensorEventListener {
 
     private static final String TAG = "HomeActivity";
 
@@ -46,6 +53,9 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.O
     GoogleSignInAccount account;
     SectionsPageAdapter adapter;
     GoogleApiClient mGoogleApiClient;
+
+    SensorManager sensorManager;
+    Sensor sensor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +97,9 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.O
                 startActivity(intent);
             }
         });
+
+        sensorManager = (SensorManager) getSystemService(Service.SENSOR_SERVICE);
+        sensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
     }
 
     private void setupTabIcons() {
@@ -179,5 +192,38 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.O
     public void setupFriendList() {
         FriendsFragment friend_frag = (FriendsFragment) adapter.getItem(0);
         friend_frag.setFriendList(account);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        sensorManager.unregisterListener(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    @SuppressLint("ResourceAsColor")
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+        if (sensorEvent.sensor.getType() == Sensor.TYPE_LIGHT) {
+            Log.d(TAG, String.valueOf(sensorEvent.values[0]));
+            View view = findViewById(R.id.background_view);
+            if (sensorEvent.values[0] < 15) {
+                Log.d(TAG, "Jadi gelap");
+                view.setAlpha(1f);
+            } else {
+                Log.d(TAG, "Jadi terang");
+                view.setAlpha(0f);
+            }
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+
     }
 }

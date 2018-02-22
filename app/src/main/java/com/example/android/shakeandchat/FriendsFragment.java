@@ -98,6 +98,7 @@ public class FriendsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        friendsAdapter.notifyDataSetChanged();
         Log.d(TAG, "onResume_Friends");
     }
 
