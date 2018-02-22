@@ -2,6 +2,7 @@ package com.example.android.shakeandchat;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -38,17 +39,26 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
         //Remove title bar
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         //Remove notification bar
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         //set content view AFTER ABOVE sequence (to avoid crash)
-        setContentView(R.layout.activity_main);
+        switch (getResources().getConfiguration().orientation) {
+            case Configuration.ORIENTATION_PORTRAIT:
+                setContentView(R.layout.activity_main);
+                break;
+            case Configuration.ORIENTATION_LANDSCAPE:
+                setContentView(R.layout.activity_main_land);
+        }
+
 
         SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(GOOGLE_ACCOUNT_KEY, MODE_PRIVATE);
         String id = sharedPreferences.getString("id", null);
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-
+        Log.d(TAG, id + "    " + account);
         if (id != null && account != null){
             Intent intent = new Intent(this, HomeActivity.class);
             intent.putExtra("Account", account);

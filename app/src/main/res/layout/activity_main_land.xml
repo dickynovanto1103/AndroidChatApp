@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="16dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="16dp"
+    android:background="@drawable/background_image"
+    tools:context="com.example.android.shakeandchat.MainActivity">
+
+        <RelativeLayout
+            android:layout_width="400dp"
+            android:layout_height="300dp"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/layout_bg"
+            android:elevation="10dp">
+
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="350dp"
+                    android:layout_gravity="center"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_height="180dp"
+                    app:srcCompat="@drawable/halaman_utama_land" />
+
+                <com.google.android.gms.common.SignInButton
+                    android:id="@+id/sign_in_button"
+                    android:layout_centerHorizontal="true"
+                    android:layout_width="189dp"
+                    android:layout_below="@id/imageView"
+                    android:layout_height="wrap_content">
+
+                </com.google.android.gms.common.SignInButton>
+        </RelativeLayout>
+
+</RelativeLayout>
