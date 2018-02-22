@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -30,12 +31,13 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
-public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback{
+public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
     private ShakeDetector mShakeDetector;
     private TextView mStatusText;
-    private DatabaseReference mDBRef;
+    private DatabaseReference mDBActiveUser;
+    private DatabaseReference mDBFriendList;
     private FusedLocationProviderClient mFusedLocationClient;
     private static final int LOCATION_REQUEST_PERMISSION = 99;
     private boolean isShaking;
@@ -44,27 +46,37 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
     private ArrayList<ActiveUser> foundUser;
     private FriendAdapter friendAdapter;
 
-    private void writeActiveUser(String name, String email, String displayImage){
+    private void writeActiveUser(String name, String email, String displayImage) {
         ActiveUser activeUser = new ActiveUser(name, email, displayImage, myLocation.getLatitude(), myLocation.getLongitude());
-        mDBRef.child(name).setValue(activeUser);
+        mDBActiveUser.child(name).setValue(activeUser);
     }
 
-    private void removeInactiveUser(String name){
-        mDBRef.child(name).removeValue();
+    private void removeInactiveUser(String name) {
+        mDBActiveUser.child(name).removeValue();
     }
 
-    private void findingFriends(){
+    private void findingFriends() {
         mStatusText.setText(R.string.shaking_status);
 
-        if (!isShaking){
+        if (!isShaking) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
             mFusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(Location location) {
-                    if (location != null){
+                    if (location != null) {
                         myLocation = location;
                         Log.d("Location: ", location.toString());
                         String displayImage = account.getPhotoUrl().toString();
-                        if(displayImage == null) displayImage = "default";
+                        if (displayImage == null) displayImage = "default";
                         writeActiveUser(account.getDisplayName(), account.getEmail(), displayImage);
                     }
                 }
@@ -108,7 +120,7 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
     }
 
     private void setupDB(){
-        mDBRef = FirebaseDatabase.getInstance().getReference("active_users");
+        mDBActiveUser = FirebaseDatabase.getInstance().getReference("active_users");
         ChildEventListener userListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -152,7 +164,9 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
                 Log.w("Error: ", "postComments:onCancelled", databaseError.toException());
             }
         };
-        mDBRef.addChildEventListener(userListener);
+        mDBActiveUser.addChildEventListener(userListener);
+
+        mDBFriendList = FirebaseDatabase.getInstance().getReference("friendList/" + account.getId());
     }
 
     private void setDisplayFoundFriend(boolean view){
@@ -175,14 +189,26 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
 
         mStatusText = (TextView) findViewById(R.id.status_shake);
         isShaking = false;
+
+        account = getIntent().getParcelableExtra("Account");
         setupSensor();
         setupDB();
 
         foundUser = new ArrayList<ActiveUser>();
-        account = getIntent().getParcelableExtra("Account");
         friendAdapter = new FriendAdapter(this, foundUser);
         ListView listView = (ListView) findViewById(R.id.found_friend);
         listView.setAdapter(friendAdapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                ActiveUser clickedUser = foundUser.get(i);
+                mDBFriendList.push().setValue(new FriendUser(clickedUser.username,
+                        clickedUser.email, clickedUser.displayImage));
+                if(isShaking) removeInactiveUser(account.getDisplayName());
+                finish();
+            }
+        });
     }
 
     @Override
