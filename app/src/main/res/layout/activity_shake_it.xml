@@ -30,4 +30,10 @@
         android:text="@string/waiting_shake_status"
         android:textAppearance="@style/TextAppearance.AppCompat.Notification.Info" />
 
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:id="@+id/found_friend"
+        android:visibility="gone" />
+
 </RelativeLayout>

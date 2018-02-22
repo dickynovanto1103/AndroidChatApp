@@ -2,6 +2,7 @@ package com.example.android.shakeandchat;
 
 import android.*;
 import android.Manifest;
+import android.app.ListActivity;
 import android.content.Context;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
@@ -16,21 +17,20 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.ArrayList;
 
 public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback{
     private SensorManager mSensorManager;
@@ -43,6 +43,8 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
     private boolean firstShake;
     private Location myLocation;
     private GoogleSignInAccount account;
+    private ArrayList<User> foundUser;
+    private FriendAdapter friendAdapter;
 
     private void writeActiveUser(String name, String key){
         User activeUser = new User(name, key, myLocation.getLatitude(), myLocation.getLongitude());
@@ -109,7 +111,9 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
         ChildEventListener userListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Log.d("onChildAdded: ", dataSnapshot.getKey());
+                User user = dataSnapshot.getValue(User.class);
+                foundUser.add(user);
+                friendAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -145,7 +149,11 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
         setupSensor();
         setupDB();
 
+        foundUser = new ArrayList<User>();
         account = getIntent().getParcelableExtra("Account");
+        friendAdapter = new FriendAdapter(this, foundUser);
+        ListView listView = (ListView) findViewById(R.id.found_friend);
+        listView.setAdapter(friendAdapter);
     }
 
     @Override
