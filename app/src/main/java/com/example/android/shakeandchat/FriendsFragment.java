@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -54,6 +55,7 @@ public class FriendsFragment extends Fragment {
         Log.d(TAG, "onCreateView_Friends");
 
         mListView = view.findViewById(R.id.listFriends);
+        friendList = new ArrayList<FriendUser>();
         friendsAdapter = new FriendsAdapter(getActivity(), R.layout.friends_layout, friendList);
         mListView.setAdapter(friendsAdapter);
 
@@ -83,10 +85,12 @@ public class FriendsFragment extends Fragment {
                 Log.d(TAG + "__a", String.valueOf(friendList.size()));
                 Log.d(TAG + "__b", String.valueOf(friendCount));
 
-                friendsAdapter = new FriendsAdapter(getActivity(), R.layout.friends_layout, friendList);
-                mListView.setAdapter(friendsAdapter);
-
-                friendsAdapter.notifyDataSetChanged();
+                FragmentActivity activity = getActivity();
+                if (activity != null) {
+                    friendsAdapter = new FriendsAdapter(activity, R.layout.friends_layout, friendList);
+                    mListView.setAdapter(friendsAdapter);
+                    friendsAdapter.notifyDataSetChanged();
+                }
 
                 Log.d(TAG, "done");
             }

@@ -86,7 +86,7 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.O
         mGoogleApiClient.connect();
 
         account = getIntent().getParcelableExtra("Account");
-
+        Log.d(TAG + "____b", String.valueOf(account));
         Button addFriend = (Button) findViewById(R.id.addFriend);
         addFriend.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -216,7 +216,7 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.O
         if (sensorEvent.sensor.getType() == Sensor.TYPE_LIGHT) {
             Log.d(TAG, String.valueOf(sensorEvent.values[0]));
             View view = findViewById(R.id.background_view);
-            if (sensorEvent.values[0] < 15) {
+            if (sensorEvent.values[0] < 9) {
                 Log.d(TAG, "Jadi gelap");
                 view.setAlpha(1f);
             } else {
