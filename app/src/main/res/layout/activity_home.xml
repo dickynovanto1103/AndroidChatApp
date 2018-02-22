@@ -39,6 +39,8 @@
         <android.support.design.widget.TabLayout
             android:id="@+id/tabs"
             android:layout_width="match_parent"
+            app:tabMaxWidth="0dp"
+            app:tabGravity="fill"
             android:layout_height="wrap_content">
 
         </android.support.design.widget.TabLayout>
@@ -58,6 +60,17 @@
         android:background="@color/colorPrimary"
         android:textColor="@color/colorWhite"
         android:text="@string/add_friend"
+        />
+
+    <Button
+        android:id="@+id/chatFriend"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/colorWhite"
+        android:visibility="invisible"
+        android:text="Test Chat"
         />
 
 </android.support.design.widget.CoordinatorLayout>

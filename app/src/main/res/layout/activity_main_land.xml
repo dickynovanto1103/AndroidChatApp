@@ -24,15 +24,16 @@
                     android:layout_width="350dp"
                     android:layout_gravity="center"
                     android:layout_centerHorizontal="true"
-                    android:layout_marginTop="30dp"
-                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="20dp"
                     android:layout_height="180dp"
                     app:srcCompat="@drawable/halaman_utama_land" />
 
                 <com.google.android.gms.common.SignInButton
                     android:id="@+id/sign_in_button"
-                    android:layout_centerHorizontal="true"
-                    android:layout_width="189dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="30dp"
+                    android:layout_width="160dp"
                     android:layout_below="@id/imageView"
                     android:layout_height="wrap_content">
 
