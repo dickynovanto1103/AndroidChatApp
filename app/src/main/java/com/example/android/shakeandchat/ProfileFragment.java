@@ -1,7 +1,9 @@
 package com.example.android.shakeandchat;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -40,6 +42,8 @@ public class ProfileFragment extends Fragment {
     private ImageView imageView_photo;
     private Button signOutButton;
     private GoogleApiClient mGoogleApiClient;
+    private Activity parentActivity;
+    private static final String GOOGLE_ACCOUNT_KEY = "GACCOUNT_KEY";
 
     @Nullable
     @Override
@@ -59,6 +63,8 @@ public class ProfileFragment extends Fragment {
                 signOut(mGoogleApiClient);
             }
         });
+
+        parentActivity = this.getActivity();
 
         return view;
     }
@@ -112,6 +118,11 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onResult(@NonNull Status status) {
                 Toast.makeText(getContext(),"Logged Out",Toast.LENGTH_SHORT).show();
+
+                SharedPreferences.Editor editor = parentActivity.getSharedPreferences(GOOGLE_ACCOUNT_KEY, Context.MODE_PRIVATE).edit();
+                editor.remove("id");
+                editor.commit();
+
                 Intent intent = new Intent(getContext(), MainActivity.class);
                 startActivity(intent);
                 getActivity().finish();
