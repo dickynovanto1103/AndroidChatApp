@@ -36,7 +36,7 @@ public class FriendAdapter extends ArrayAdapter {
 
         TextView mName = (TextView) rowView.findViewById(R.id.friendsName);
         TextView mEmail = (TextView) rowView.findViewById(R.id.friendsEmail);
-        ImageView profilePict = (ImageView) rowView.findViewById(R.id.photo_profile);
+        ImageView profilePict = (ImageView) rowView.findViewById(R.id.imageFriends);
 
         mName.setText(user.get(position).username);
         mEmail.setText(user.get(position).email);
@@ -46,7 +46,7 @@ public class FriendAdapter extends ArrayAdapter {
         } else {
             int radius = 30;
             int margin = 0;
-            Glide.with(view.getContext()).load(user.get(position).displayImage)
+            Glide.with(context).load(user.get(position).displayImage)
                     .thumbnail(0.5f)
                     .crossFade()
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
