@@ -76,6 +76,7 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.O
         mGoogleApiClient.connect();
 
         account = getIntent().getParcelableExtra("Account");
+        setupFriendList();
 
         Button addFriend = (Button) findViewById(R.id.addFriend);
         addFriend.setOnClickListener(new View.OnClickListener() {
@@ -84,7 +85,6 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.O
                 Intent  intent = new Intent(view.getContext(), ShakeIt.class);
                 intent.putExtra("Account", account);
                 startActivity(intent);
-                finish();
             }
         });
     }
@@ -174,5 +174,10 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.O
 
     public GoogleApiClient getGoogleApiClient() {
         return mGoogleApiClient;
+    }
+
+    public void setupFriendList() {
+        FriendsFragment friend_frag = (FriendsFragment) adapter.getItem(0);
+        friend_frag.setFriendList(account);
     }
 }

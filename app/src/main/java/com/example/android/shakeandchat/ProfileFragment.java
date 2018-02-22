@@ -73,7 +73,6 @@ public class ProfileFragment extends Fragment {
         Log.d(TAG, "Masuk setProfile");
         textView_nama.setText(name);
         textView_email.setText(email);
-
         if (photoUrl.equals("default")) {
             imageView_photo.setImageResource(R.drawable.default_profile);
         } else {

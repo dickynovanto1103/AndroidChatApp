@@ -17,8 +17,21 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toolbar;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 
 /**
  * Created by um on 02/20/18.
@@ -28,6 +41,11 @@ public class FriendsFragment extends Fragment {
     private static final String TAG = "FriendsFragment";
 
     private ListView mListView;
+    private GoogleSignInAccount account;
+
+    ArrayList<FriendUser> friendList;
+    FriendsAdapter friendsAdapter;
+    public int friendCount;
 
     @Nullable
     @Override
@@ -37,24 +55,43 @@ public class FriendsFragment extends Fragment {
 
         mListView = view.findViewById(R.id.listFriends);
         Log.d(TAG, "Test0");
-        ArrayList<User> friendList = new ArrayList<User>();
-        friendList.add(new User("Achmad Fahrurrozi Maskur", "fahrurrozi31@gmail.com", 1, 1));
-        friendList.add(new User("Dicky Novanto", "dickynovanto1103@gmail.com", 2, 2));
-        friendList.add(new User("Pratamamia Agung P.", "apratamamia@gmail.com", 3, 3));
-        friendList.add(new User("It's dummy 1", "dummy1@gmail.com", 99, 99));
-        friendList.add(new User("It's dummy 2", "dummy2@gmail.com", 99, 99));
-        friendList.add(new User("It's dummy 3", "dummy3@gmail.com", 99, 99));
-        friendList.add(new User("It's dummy 4", "dummy4@gmail.com", 99, 99));
-        friendList.add(new User("It's dummy 5", "dummy5@gmail.com", 99, 99));
-        friendList.add(new User("It's dummy 6", "dummy6@gmail.com", 99, 99));
-        friendList.add(new User("It's dummy 7", "dummy7@gmail.com", 99, 99));
+        friendList = new ArrayList<FriendUser>();
         Log.d(TAG, "Test1");
-        FriendsAdapter friendsAdapter = new FriendsAdapter(getActivity(), R.layout.friends_layout, friendList);
+        friendsAdapter = new FriendsAdapter(getActivity(), R.layout.friends_layout, friendList);
         Log.d(TAG, "Test2");
         mListView.setAdapter(friendsAdapter);
 
         return view;
     }
+
+    public void setFriendList(GoogleSignInAccount account) {
+        Log.d(TAG, "In: setFriendList");
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        DatabaseReference reference = firebaseDatabase.getReference("friendList");
+        Log.d(TAG, "getReference");
+        reference.child(String.valueOf(account.getId())).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                friendCount = (int) dataSnapshot.getChildrenCount();
+                Log.d(TAG, String.valueOf(friendCount));
+                for (DataSnapshot friendSnapshot: dataSnapshot.getChildren()) {
+                    Log.d(TAG, String.valueOf(friendSnapshot));
+                    String name = String.valueOf((friendSnapshot.child("name")).getValue());
+                    String email = String.valueOf((friendSnapshot.child("email")).getValue());
+                    String photoURL = String.valueOf((friendSnapshot.child("photoURL")).getValue());
+                    friendList.add(new FriendUser(name, email, photoURL));
+                }
+                friendsAdapter.notifyDataSetChanged();
+                Log.d(TAG, "done");
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
+        Log.d(TAG, "getSize");
+        Log.d(TAG, String.valueOf(friendCount));
+
+    }
+
 
     @Override
     public void onResume() {
@@ -80,15 +117,54 @@ public class FriendsFragment extends Fragment {
         Log.d(TAG, "onStop_Friends");
     }
 
-    class FriendsAdapter extends ArrayAdapter<User> {
 
-        ArrayList<User> userList;
+    public class FriendUser implements Serializable {
+        public String name;
+        public String email;
+        public String photoURL;
+
+        public FriendUser() {}
+
+        public FriendUser(String name, String email, String photoURL) {
+            this.name = name;
+            this.email = email;
+            this.photoURL = photoURL;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getPhotoURL() {
+            return photoURL;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public void setPhotoURL(String photoURL) {
+            this.photoURL = photoURL;
+        }
+    }
+
+    class FriendsAdapter extends ArrayAdapter<FriendUser> {
+
+        ArrayList<FriendUser> userList;
         private Context context;
         private int resource;
         private View view;
-        private User user;
+        private FriendUser user;
 
-        public FriendsAdapter(Context context, int resource, ArrayList<User> user) {
+        public FriendsAdapter(Context context, int resource, ArrayList<FriendUser> user) {
             super(context, resource, user);
             this.context = context;
             this.resource = resource;
@@ -107,9 +183,20 @@ public class FriendsFragment extends Fragment {
 
             user = userList.get(i);
 
-            imageFriends.setImageResource(R.drawable.ic_launcher_background);
-            friendsName.setText(user.username);
-            friendsEmail.setText(user.key);
+            friendsName.setText(user.name);
+            friendsEmail.setText(user.email);
+            if ((user.photoURL).equals("default")) {
+                imageFriends.setImageResource(R.drawable.default_profile);
+            } else {
+                int radius = 30;
+                int margin = 0;
+                Glide.with(context).load(user.photoURL)
+                        .thumbnail(0.5f)
+                        .crossFade()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .bitmapTransform(new RoundedCornersTransformation(context, radius, margin))
+                        .into(imageFriends);
+            }
 
             return view;
         }
