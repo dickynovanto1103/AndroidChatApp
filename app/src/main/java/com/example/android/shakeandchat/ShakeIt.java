@@ -54,8 +54,6 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
     }
 
     private void findingFriends(){
-        final Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
-        findViewById(R.id.shake_logo).startAnimation(shake);
         mStatusText.setText(R.string.shaking_status);
 
         if (!isShaking){
@@ -71,6 +69,8 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
                     }
                 }
             });
+            final Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
+            findViewById(R.id.shake_logo).startAnimation(shake);
         }
     }
 
