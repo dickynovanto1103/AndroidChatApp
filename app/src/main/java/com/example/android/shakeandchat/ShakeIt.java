@@ -261,6 +261,8 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
     @Override
     public void onPause(){
         mSensorManager.unregisterListener(mShakeDetector);
+        if(isShaking)
+            removeInactiveUser(account.getDisplayName());
         super.onPause();
     }
 }
