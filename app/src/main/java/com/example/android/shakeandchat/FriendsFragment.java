@@ -74,6 +74,7 @@ public class FriendsFragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 friendCount = (int) dataSnapshot.getChildrenCount();
                 Log.d(TAG, String.valueOf(friendCount));
+
                 for (DataSnapshot friendSnapshot: dataSnapshot.getChildren()) {
                     Log.d(TAG, String.valueOf(friendSnapshot));
                     String name = String.valueOf((friendSnapshot.child("name")).getValue());
@@ -81,6 +82,7 @@ public class FriendsFragment extends Fragment {
                     String photoURL = String.valueOf((friendSnapshot.child("photoURL")).getValue());
                     friendList.add(new FriendUser(name, email, photoURL));
                 }
+
                 friendsAdapter.notifyDataSetChanged();
                 Log.d(TAG, "done");
             }
@@ -118,43 +120,7 @@ public class FriendsFragment extends Fragment {
     }
 
 
-    public class FriendUser implements Serializable {
-        public String name;
-        public String email;
-        public String photoURL;
 
-        public FriendUser() {}
-
-        public FriendUser(String name, String email, String photoURL) {
-            this.name = name;
-            this.email = email;
-            this.photoURL = photoURL;
-        }
-
-        public String getEmail() {
-            return email;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getPhotoURL() {
-            return photoURL;
-        }
-
-        public void setEmail(String email) {
-            this.email = email;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public void setPhotoURL(String photoURL) {
-            this.photoURL = photoURL;
-        }
-    }
 
     class FriendsAdapter extends ArrayAdapter<FriendUser> {
 
