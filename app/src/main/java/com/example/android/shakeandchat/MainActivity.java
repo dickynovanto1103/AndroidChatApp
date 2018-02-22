@@ -138,41 +138,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     Log.d("test list", "list diterima");
-
-//                    HashMap<String, UserWithFirebaseToken> mapTemp = new HashMap<>();
-//
-//                    int i = 0;
-//                    for(DataSnapshot anak: dataSnapshot.getChildren()) {
-//                        String hasil = anak.getValue().toString();
-//                        //parse
-//
-//                        String name = String.valueOf(anak.child("name").getValue());
-//                        String email = String.valueOf(anak.child("email").getValue());
-//                        String firebaseToken = String.valueOf(anak.child("firebaseToken").getValue());
-//                        UserWithFirebaseToken user = new UserWithFirebaseToken(name,email,firebaseToken);
-//                        Integer indeks = new Integer(i);
-//                        mapTemp.put(indeks.toString(), user);
-//                        i++;
-//                        Log.d("yang dipush: ", "i: "+ i +" yang dipush email: " + email);
-//                    }
-
-
-//                    for(i = 0; i < s.size(); i++) {
-//                        List<HashMap<String, Object>> daftar = s.get(i);
-//                        for(int j = 0; j < daftar.size(); j++) {
-//                            HashMap<String, Object> map1 = daftar.get(i);
-//
-//                            Integer angka = new Integer(j);
-//                            map.put(angka.toString(), map1.get(angka.toString()));
-//                        }
-//                    }
-//                    Integer index = new Integer(i);
-//                    mapTemp.put(index.toString(), data);
-//                    Log.d("push", "yang dipush email: "+data.getEmail());
-//                    reference.setValue(mapTemp);
-
-
-//                    Log.d("hasil", "hasil retrieve: "+ dataSnapshot.getValue());
                 }
 
                 @Override
