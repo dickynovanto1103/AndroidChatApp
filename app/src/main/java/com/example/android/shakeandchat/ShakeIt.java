@@ -15,6 +15,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ListView;
@@ -111,9 +112,12 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
         ChildEventListener userListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                User user = dataSnapshot.getValue(User.class);
-                foundUser.add(user);
-                friendAdapter.notifyDataSetChanged();
+                User addedUser = dataSnapshot.getValue(User.class);
+                if (addedUser.username != account.getDisplayName()){
+                    foundUser.add(addedUser);
+                    friendAdapter.notifyDataSetChanged();
+                }
+                if(foundUser.size() == 1) findViewById(R.id.found_friend).setVisibility(View.VISIBLE);
             }
 
             @Override
@@ -123,7 +127,18 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-                Log.d("onChildRemoved: ", dataSnapshot.getKey());
+                User removedUser = dataSnapshot.getValue(User.class);
+                boolean found = false;
+                int i = 0;
+                while(!found && i < foundUser.size()){
+                    if(foundUser.get(i).username == removedUser.username) {
+                        foundUser.remove(i);
+                        found = true;
+                    }
+                    i++;
+                }
+                if (found) friendAdapter.notifyDataSetChanged();
+                if (foundUser.isEmpty()) findViewById(R.id.found_friend).setVisibility(View.GONE);
             }
 
             @Override
