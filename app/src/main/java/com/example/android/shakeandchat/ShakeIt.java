@@ -156,6 +156,7 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
     private void setDisplayFoundFriend(boolean view){
         if (view){
             findViewById(R.id.found_friend).setVisibility(View.VISIBLE);
+            findViewById(R.id.shake_logo).clearAnimation();
             findViewById(R.id.shake_logo).setVisibility(View.GONE);
             findViewById(R.id.status_shake).setVisibility(View.GONE);
         } else {
