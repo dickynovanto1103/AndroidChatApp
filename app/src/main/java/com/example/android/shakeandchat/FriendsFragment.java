@@ -54,11 +54,7 @@ public class FriendsFragment extends Fragment {
         Log.d(TAG, "onCreateView_Friends");
 
         mListView = view.findViewById(R.id.listFriends);
-        Log.d(TAG, "Test0");
-        friendList = new ArrayList<FriendUser>();
-        Log.d(TAG, "Test1");
         friendsAdapter = new FriendsAdapter(getActivity(), R.layout.friends_layout, friendList);
-        Log.d(TAG, "Test2");
         mListView.setAdapter(friendsAdapter);
 
         return view;
@@ -68,6 +64,7 @@ public class FriendsFragment extends Fragment {
         Log.d(TAG, "In: setFriendList");
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         DatabaseReference reference = firebaseDatabase.getReference("friendList");
+        friendList = new ArrayList<FriendUser>();
         Log.d(TAG, "getReference");
         reference.child(String.valueOf(account.getId())).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -83,14 +80,21 @@ public class FriendsFragment extends Fragment {
                     friendList.add(new FriendUser(name, email, photoURL));
                 }
 
+                Log.d(TAG + "__a", String.valueOf(friendList.size()));
+                Log.d(TAG + "__b", String.valueOf(friendCount));
+
+                friendsAdapter = new FriendsAdapter(getActivity(), R.layout.friends_layout, friendList);
+                mListView.setAdapter(friendsAdapter);
+
                 friendsAdapter.notifyDataSetChanged();
+
                 Log.d(TAG, "done");
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {}
         });
-        Log.d(TAG, "getSize");
-        Log.d(TAG, String.valueOf(friendCount));
+
+
 
     }
 
@@ -98,7 +102,6 @@ public class FriendsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        friendsAdapter.notifyDataSetChanged();
         Log.d(TAG, "onResume_Friends");
     }
 
