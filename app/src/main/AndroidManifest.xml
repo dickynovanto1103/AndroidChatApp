@@ -48,15 +48,16 @@
         <activity
             android:name=".HomeActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:label="@string/title_activity_home"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-        <!-- <service -->
-        <!-- android:name=".MyFirebaseMessagingService"> -->
-        <!-- <intent-filter> -->
-        <!-- <action android:name="com.google.firebase.MESSAGING_EVENT"/> -->
-        <!-- </intent-filter> -->
-        <!-- </service> -->
-        <service android:name=".MyFirebaseInstanceIDService">
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <service
+            android:name=".MyFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+        <service
+            android:name=".MyFirebaseInstanceIDService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>

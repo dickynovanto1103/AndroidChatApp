@@ -1,9 +1,12 @@
 package com.example.android.shakeandchat;
 
 import android.content.Intent;
+import android.provider.SyncStateContract;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.support.annotation.NonNull;
+import android.support.constraint.solver.widgets.ConstraintWidget;
+import android.support.constraint.solver.widgets.Snapshot;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,10 +26,33 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingService;
+import com.google.firebase.messaging.RemoteMessage;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.FileInputStream;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.io.Serializable;
+
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
     SignInButton signInButton;
@@ -54,6 +80,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 setContentView(R.layout.activity_main_land);
         }
 
+
+        signInButton = (SignInButton) findViewById(R.id.sign_in_button);
+        signInButton.setOnClickListener(this);
 
         SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(GOOGLE_ACCOUNT_KEY, MODE_PRIVATE);
         String id = sharedPreferences.getString("id", null);
@@ -108,12 +137,39 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         if (result.isSuccess()) {
             //sign in success
             GoogleSignInAccount acct = result.getSignInAccount();
+
+
+
+
             //kirim data akun ke firebase database
-            Log.d("debugKirimFirebase", "lagi mau kirim");
             FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-            DatabaseReference reference = firebaseDatabase.getReference("listToken");
-            reference.setValue(acct.getDisplayName());
-            Log.d("debugKirimFirebase", "sudah kirim");
+            final DatabaseReference reference = firebaseDatabase.getReference("listToken");
+
+
+            String name = acct.getDisplayName();
+            String email = acct.getEmail();
+            String token = FirebaseInstanceId.getInstance().getToken();
+            Log.i("FIREBASE", "FCM Registration token: "+ token);
+
+            UserWithFirebaseToken userWithFirebaseToken = new UserWithFirebaseToken(name, email, token);
+
+            reference.push().setValue(userWithFirebaseToken);
+
+            Log.d("hasil", "berhasil masukkan");
+
+            //testing baca dari database
+            reference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Log.d("test list", "list diterima");
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.d("gagal", "gagal ambil data");
+                }
+            });
+
 
             SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(GOOGLE_ACCOUNT_KEY, MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();
