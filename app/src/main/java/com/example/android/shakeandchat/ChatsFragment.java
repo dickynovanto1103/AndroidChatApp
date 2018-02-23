@@ -192,20 +192,37 @@ public class ChatsFragment extends Fragment {
 
             String newDateString = null;
 
-            try {
+            String oldDateString = chatFriend.getTimeStamp();
 
-                final String OLD_FORMAT = "MMM dd, YYYY HH:mm:ss";
+            if (oldDateString.substring(oldDateString.length() - 1).equals("M")) {
+                final String OLD_FORMAT = "MMM dd, yyyy hh:mm:ss aaa";
                 final String NEW_FORMAT = "HH:mm";
 
-                String oldDateString = chatFriend.getTimeStamp();
 
                 SimpleDateFormat sdf = new SimpleDateFormat(OLD_FORMAT);
-                Date d = sdf.parse(oldDateString);
+                Date d = null;
+                try {
+                    d = sdf.parse(oldDateString);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                sdf.applyPattern(NEW_FORMAT);
+                newDateString = sdf.format(d);
+            } else {
+                final String OLD_FORMAT = "MMM dd, yyyy HH:mm:ss";
+                final String NEW_FORMAT = "HH:mm";
+
+
+                SimpleDateFormat sdf = new SimpleDateFormat(OLD_FORMAT);
+                Date d = null;
+                try {
+                    d = sdf.parse(oldDateString);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
                 sdf.applyPattern(NEW_FORMAT);
                 newDateString = sdf.format(d);
 
-            } catch (ParseException e) {
-                e.printStackTrace();
             }
 
             chatsTime.setText(newDateString);
