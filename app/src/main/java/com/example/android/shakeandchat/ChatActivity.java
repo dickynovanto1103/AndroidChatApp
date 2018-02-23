@@ -28,23 +28,20 @@ public class ChatActivity extends AppCompatActivity {
     private ListView messagesContainer;
     private ChatAdapter adapter;
     private ArrayList<ChatMessage> chatHistory;
-    private String senderID;
-    private String destID;
+    private GoogleSignInAccount sender;
+    private FriendUser dest;
     private DatabaseReference mDBChatChannel;
+    private DatabaseReference mDBChatFriend;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-        FriendUser friendUser = (FriendUser) getIntent().getSerializableExtra("friendClicked");
-        GoogleSignInAccount account = (GoogleSignInAccount) getIntent().getParcelableExtra("Account");
+        dest = (FriendUser) getIntent().getSerializableExtra("friendClicked");
+        sender = (GoogleSignInAccount) getIntent().getParcelableExtra("Account");
 
-        senderID = account.getEmail();
-        destID = friendUser.getEmail();
-
-
-        String decodedSenderID = decodeID(senderID);
-        String decodedDestID = decodeID(destID);
+        String decodedSenderID = decodeID(sender.getEmail());
+        String decodedDestID = decodeID(dest.getEmail());
 
         String chat_id;
         if (decodedSenderID.compareTo(decodedDestID) < 0) {
@@ -53,8 +50,8 @@ public class ChatActivity extends AppCompatActivity {
             chat_id = decodedDestID + "-" + decodedSenderID;
         }
 
-        if (friendUser != null) {
-            setTitle(friendUser.getName());
+        if (dest != null) {
+            setTitle(dest.getName());
         } else {
             setTitle("NULL");
         }
@@ -63,7 +60,7 @@ public class ChatActivity extends AppCompatActivity {
         initControls();
 
         chatHistory = new ArrayList<ChatMessage>();
-        adapter = new ChatAdapter(ChatActivity.this, new ArrayList<ChatMessage>(), senderID);
+        adapter = new ChatAdapter(ChatActivity.this, new ArrayList<ChatMessage>(), sender.getEmail());
         messagesContainer.setAdapter(adapter);
     }
 
@@ -103,6 +100,8 @@ public class ChatActivity extends AppCompatActivity {
                 Log.w("Error", "DB chat_channel connection error" , databaseError.toException());
             }
         });
+
+        mDBChatFriend = FirebaseDatabase.getInstance().getReference("chatList");
     }
 
     private String decodeID(String id){
@@ -130,15 +129,22 @@ public class ChatActivity extends AppCompatActivity {
                 }
 
                 ChatMessage chatMessage = new ChatMessage();
+                String timeNow = DateFormat.getDateTimeInstance().format(new Date());
 
-                chatMessage.setSenderID(senderID);
+                chatMessage.setSenderID(sender.getEmail());
                 chatMessage.setMessage(messageText);
-                chatMessage.setDateTime(DateFormat.getDateTimeInstance().format(new Date()));
-                chatMessage.setDestID(destID);
+                chatMessage.setDateTime(timeNow);
+                chatMessage.setDestID(dest.getEmail());
                 chatMessage.setType("text");
 
                 messageET.setText("");
                 mDBChatChannel.push().setValue(chatMessage);
+
+                ChatFriend senderChatFriend = new ChatFriend(dest.getName(), dest.getPhotoURL(), timeNow, messageText, false);
+                mDBChatFriend.child(decodeID(dest.getEmail())).child(decodeID(sender.getEmail())).setValue(senderChatFriend);
+
+                ChatFriend destChatFriend = new ChatFriend(sender.getDisplayName(), sender.getPhotoUrl().toString(), timeNow, messageText, true);
+                mDBChatFriend.child(decodeID(sender.getEmail())).child(decodeID(dest.getEmail())).setValue(destChatFriend);
             }
         });
     }
