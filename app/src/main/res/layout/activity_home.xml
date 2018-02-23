@@ -62,15 +62,4 @@
         android:text="@string/add_friend"
         />
 
-    <Button
-        android:id="@+id/chatFriend"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:background="@color/colorPrimary"
-        android:textColor="@color/colorWhite"
-        android:visibility="invisible"
-        android:text="Test Chat"
-        />
-
 </android.support.design.widget.CoordinatorLayout>
