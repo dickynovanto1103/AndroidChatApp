@@ -84,7 +84,8 @@ public class ChatsFragment extends Fragment {
                     String photoURL = String.valueOf((chatSnapshot.child("photoURL")).getValue());
                     String lastMessage = String.valueOf((chatSnapshot.child("lastMessage")).getValue());
                     String timeStamp = String.valueOf((chatSnapshot.child("timeStamp")).getValue());
-                    chatFriendList.add(new ChatFriend(name, photoURL, timeStamp, lastMessage, isOpen));
+                    String email = String.valueOf(chatSnapshot.child("email").getValue());
+                    chatFriendList.add(new ChatFriend(name, photoURL, timeStamp, lastMessage, isOpen, email));
                 }
 
                 Log.d(TAG + "__a", String.valueOf(chatFriendList.size()));
@@ -99,11 +100,12 @@ public class ChatsFragment extends Fragment {
                         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
                             ChatFriend item = chatsAdapter.getItem(i);
+                            FriendUser friend = new FriendUser(item.getName(), item.getEmail(), item.getPhotoURL());
                             if (item != null) {
                                 Log.d("TeSTing", String.valueOf(item));
                                 Log.d("TeSTing", String.valueOf(item.getName()));
                                 Intent intent = new Intent(activity, ChatActivity.class);
-                                intent.putExtra("chatClicked", item);
+                                intent.putExtra("friendClicked", friend);
                                 intent.putExtra("Account", account);
                                 startActivity(intent);
                             } else {
@@ -179,6 +181,7 @@ public class ChatsFragment extends Fragment {
             TextView chatsName = view.findViewById(R.id.chatsName);
             TextView chatsLastMessage = view.findViewById(R.id.chatsLastMessage);
             TextView chatsTime = view.findViewById(R.id.chatsTime);
+            TextView newBadge = view.findViewById(R.id.new_badge);
 
             chatFriend = userList.get(i);
 
@@ -191,9 +194,9 @@ public class ChatsFragment extends Fragment {
             chatsTime.setText("10:31");
 
             if (chatFriend.isOpen()) {
-                chatsLastMessage.setTextColor(R.color.chats);
+                newBadge.setVisibility(View.GONE);
             } else {
-                chatsLastMessage.setTextColor(R.color.colorAccent);
+                newBadge.setVisibility(View.VISIBLE);
             }
             if ((chatFriend.photoURL).equals("default")) {
                 chatsImage.setImageResource(R.drawable.default_profile);

@@ -38,6 +38,8 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ChatActivity extends AppCompatActivity {
 
@@ -124,6 +126,14 @@ public class ChatActivity extends AppCompatActivity {
         });
 
         mDBChatFriend = FirebaseDatabase.getInstance().getReference("chatList");
+        markAsRead(2);
+    }
+
+    private void markAsRead(int pos){
+        Log.d("MARK AS READ FROM:", String.valueOf(pos));
+        Map<String, Object> hasOpened = new HashMap<String, Object>();
+        hasOpened.put("isOpen", true);
+        mDBChatFriend.child(decodeID(sender.getEmail())).child(decodeID(dest.getEmail())).updateChildren(hasOpened);
     }
 
     private String decodeID(String id){
@@ -138,9 +148,11 @@ public class ChatActivity extends AppCompatActivity {
     private void initControls() {
         messagesContainer = (ListView) findViewById(R.id.messagesContainer);
         messageET = (EditText) findViewById(R.id.messageEdit);
-        ImageButton sendBtn = (ImageButton) findViewById(R.id.chatSendButton);
+
         ImageButton takePictureBtn = (ImageButton) findViewById(R.id.chatSendImage);
         Log.d("test", "halo");
+        final ImageButton sendBtn = (ImageButton) findViewById(R.id.chatSendButton);
+
         RelativeLayout container = (RelativeLayout) findViewById(R.id.chatcontainer);
 
         sendBtn.setOnClickListener(new View.OnClickListener() {
@@ -163,10 +175,10 @@ public class ChatActivity extends AppCompatActivity {
                 messageET.setText("");
                 mDBChatChannel.push().setValue(chatMessage);
 
-                ChatFriend senderChatFriend = new ChatFriend(dest.getName(), dest.getPhotoURL(), timeNow, messageText, false);
+                ChatFriend senderChatFriend = new ChatFriend(dest.getName(), dest.getPhotoURL(), timeNow, messageText, true, dest.getEmail());
                 mDBChatFriend.child(decodeID(sender.getEmail())).child(decodeID(dest.getEmail())).setValue(senderChatFriend);
 
-                ChatFriend destChatFriend = new ChatFriend(sender.getDisplayName(), sender.getPhotoUrl().toString(), timeNow, messageText, true);
+                ChatFriend destChatFriend = new ChatFriend(sender.getDisplayName(), sender.getPhotoUrl().toString(), timeNow, messageText, false, sender.getEmail());
                 mDBChatFriend.child(decodeID(dest.getEmail())).child(decodeID(sender.getEmail())).setValue(destChatFriend);
             }
         });
