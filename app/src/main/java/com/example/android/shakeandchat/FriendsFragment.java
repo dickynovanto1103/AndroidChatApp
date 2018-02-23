@@ -64,7 +64,8 @@ public class FriendsFragment extends Fragment {
         return view;
     }
 
-    public void setFriendList(GoogleSignInAccount account) {
+    public void setFriendList(final GoogleSignInAccount account) {
+        this.account = account;
         Log.d(TAG, "In: setFriendList");
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         DatabaseReference reference = firebaseDatabase.getReference("friendList");
@@ -101,6 +102,7 @@ public class FriendsFragment extends Fragment {
                                 Log.d("TeSTing", String.valueOf(item.getName()));
                                 Intent intent = new Intent(activity, ChatActivity.class);
                                 intent.putExtra("friendClicked", item);
+                                intent.putExtra("Account", account);
                                 startActivity(intent);
                             } else {
                                 Log.d("Testing", "null bro");

@@ -2,11 +2,14 @@ package com.example.android.shakeandchat;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -19,13 +22,22 @@ public class ChatActivity extends AppCompatActivity {
     private ImageButton sendBtn;
     private ChatAdapter adapter;
     private ArrayList<ChatMessage> chatHistory;
-
+    private String chat_id;
+    private GoogleSignInAccount account;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
         FriendUser friendUser = (FriendUser) getIntent().getSerializableExtra("friendClicked");
+        account = (GoogleSignInAccount) getIntent().getParcelableExtra("Account");
+
+        if (account.getEmail().compareTo(friendUser.getEmail()) < 0) {
+            chat_id = account.getEmail() + "-" + friendUser.getEmail();
+        } else {
+            chat_id = friendUser.getEmail() + "-" + account.getEmail() ;
+        }
+
         if (friendUser != null) {
             setTitle(friendUser.getName());
         } else {
