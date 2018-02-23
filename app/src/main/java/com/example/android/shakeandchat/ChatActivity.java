@@ -21,6 +21,8 @@ import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ChatActivity extends AppCompatActivity {
 
@@ -78,6 +80,7 @@ public class ChatActivity extends AppCompatActivity {
                 ChatMessage addedChat = dataSnapshot.getValue(ChatMessage.class);
                 chatHistory.add(addedChat);
                 displayMessage(addedChat);
+                markAsRead();
             }
 
             @Override
@@ -102,6 +105,13 @@ public class ChatActivity extends AppCompatActivity {
         });
 
         mDBChatFriend = FirebaseDatabase.getInstance().getReference("chatList");
+        markAsRead();
+    }
+
+    private void markAsRead(){
+        Map<String, Object> hasOpened = new HashMap<String, Object>();
+        hasOpened.put("isOpen", true);
+        mDBChatFriend.child(decodeID(sender.getEmail())).child(decodeID(dest.getEmail())).updateChildren(hasOpened);
     }
 
     private String decodeID(String id){
@@ -140,10 +150,10 @@ public class ChatActivity extends AppCompatActivity {
                 messageET.setText("");
                 mDBChatChannel.push().setValue(chatMessage);
 
-                ChatFriend senderChatFriend = new ChatFriend(dest.getName(), dest.getPhotoURL(), timeNow, messageText, false, dest.getEmail());
+                ChatFriend senderChatFriend = new ChatFriend(dest.getName(), dest.getPhotoURL(), timeNow, messageText, true, dest.getEmail());
                 mDBChatFriend.child(decodeID(sender.getEmail())).child(decodeID(dest.getEmail())).setValue(senderChatFriend);
 
-                ChatFriend destChatFriend = new ChatFriend(sender.getDisplayName(), sender.getPhotoUrl().toString(), timeNow, messageText, true, sender.getEmail());
+                ChatFriend destChatFriend = new ChatFriend(sender.getDisplayName(), sender.getPhotoUrl().toString(), timeNow, messageText, false, sender.getEmail());
                 mDBChatFriend.child(decodeID(dest.getEmail())).child(decodeID(sender.getEmail())).setValue(destChatFriend);
             }
         });
