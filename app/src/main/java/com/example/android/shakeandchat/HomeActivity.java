@@ -186,7 +186,11 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.O
     public void setupFriendList() {
         FriendsFragment friend_frag = (FriendsFragment) adapter.getItem(0);
         friend_frag.setFriendList(account);
-//        adapter.notifyDataSetChanged();
+    }
+
+    public void setupChatList() {
+        ChatsFragment chatsFragment = (ChatsFragment) adapter.getItem(1);
+        chatsFragment.setChatList(account);
     }
 
     @Override
@@ -202,6 +206,7 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.O
         super.onResume();
         Log.d(TAG, "onResumeHomeActivity");
         setupFriendList();
+        setupChatList();
         sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 

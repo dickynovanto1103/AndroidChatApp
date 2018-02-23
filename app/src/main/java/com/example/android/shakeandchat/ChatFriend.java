@@ -14,6 +14,14 @@ class ChatFriend implements Serializable {
     public String lastMessage;
     public boolean isOpen;
 
+    public ChatFriend(String name, String photoURL, String timeStamp, String lastMessage, boolean isOpen) {
+        this.name = name;
+        this.photoURL = photoURL;
+        this.timeStamp = timeStamp;
+        this.lastMessage = lastMessage;
+        this.isOpen = isOpen;
+    }
+
     public String getName() {
         return name;
     }
