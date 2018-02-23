@@ -242,6 +242,26 @@ public class ChatActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                             Log.d("status", "uploaded");
+                            Uri url = taskSnapshot.getDownloadUrl();
+                            Log.d("url", "url: "+url);
+                            ChatMessage chatMessage = new ChatMessage();
+                            String timeNow = DateFormat.getDateTimeInstance().format(new Date());
+
+                            String messageText = url.toString();
+                            chatMessage.setSenderID(sender.getEmail());
+                            chatMessage.setMessage(messageText);
+                            chatMessage.setDateTime(timeNow);
+                            chatMessage.setDestID(dest.getEmail());
+                            chatMessage.setType("text");
+
+                            messageET.setText("");
+                            mDBChatChannel.push().setValue(chatMessage);
+
+                            ChatFriend senderChatFriend = new ChatFriend(dest.getName(), dest.getPhotoURL(), timeNow, messageText, true, dest.getEmail());
+                            mDBChatFriend.child(decodeID(sender.getEmail())).child(decodeID(dest.getEmail())).setValue(senderChatFriend);
+
+                            ChatFriend destChatFriend = new ChatFriend(sender.getDisplayName(), sender.getPhotoUrl().toString(), timeNow, messageText, false, sender.getEmail());
+                            mDBChatFriend.child(decodeID(dest.getEmail())).child(decodeID(sender.getEmail())).setValue(destChatFriend);
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
