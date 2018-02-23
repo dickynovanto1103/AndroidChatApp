@@ -6,26 +6,20 @@ package com.example.android.shakeandchat;
 
 public class ChatMessage {
 
-    private long id;
-    private boolean isMe;
+    private String senderID;
     private String message;
-    private Long userId;
+    private String destID;
     private String dateTime;
+    private String type;
 
-    public long getId() {
-        return id;
+    public ChatMessage(){}
+
+    public String getSenderID() {
+        return senderID;
     }
 
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public boolean isMe() {
-        return isMe;
-    }
-
-    public void setMe(boolean me) {
-        isMe = me;
+    public void setSenderID(String id) {
+        this.senderID = id;
     }
 
     public String getMessage() {
@@ -36,12 +30,12 @@ public class ChatMessage {
         this.message = message;
     }
 
-    public Long getUserId() {
-        return userId;
+    public String getDestID() {
+        return destID;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setDestID(String id) {
+        this.destID = id;
     }
 
     public String getDateTime() {
@@ -50,6 +44,14 @@ public class ChatMessage {
 
     public void setDateTime(String dateTime) {
         this.dateTime = dateTime;
+    }
+
+    public void setType(String type){
+        this.type = type;
+    }
+
+    public String getType(){
+        return type;
     }
 
 }
