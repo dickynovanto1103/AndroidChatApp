@@ -44,7 +44,9 @@
 
         <activity
             android:name=".ShakeIt"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:label="@string/shake_it_title"
+            />
         <activity
             android:name=".HomeActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"

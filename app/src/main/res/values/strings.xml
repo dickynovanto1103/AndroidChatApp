@@ -16,4 +16,5 @@
     <string name="sign_out">Sign out</string>
     <string name="add_friend">Add Friend</string>
     <string name="typeMessage" />
+    <string name="shake_it_title">ShakeIt</string>
 </resources>
