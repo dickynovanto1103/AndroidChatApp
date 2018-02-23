@@ -26,7 +26,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -188,10 +190,26 @@ public class ChatsFragment extends Fragment {
             chatsName.setText(chatFriend.name);
             chatsLastMessage.setText(chatFriend.lastMessage);
 
-            Log.d(TAG, chatFriend.getTimeStamp());
-//            SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
-//            String string = dateFormat.format(new Date());
-            chatsTime.setText("10:31");
+            String newDateString = null;
+
+            try {
+
+                final String OLD_FORMAT = "MMM dd, YYYY HH:mm:ss";
+                final String NEW_FORMAT = "HH:mm";
+
+                String oldDateString = chatFriend.getTimeStamp();
+
+                SimpleDateFormat sdf = new SimpleDateFormat(OLD_FORMAT);
+                Date d = sdf.parse(oldDateString);
+                sdf.applyPattern(NEW_FORMAT);
+                newDateString = sdf.format(d);
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            chatsTime.setText(newDateString);
+
 
             if (chatFriend.isOpen()) {
                 newBadge.setVisibility(View.GONE);
