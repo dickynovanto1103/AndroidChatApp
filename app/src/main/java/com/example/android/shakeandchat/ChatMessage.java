@@ -12,6 +12,8 @@ public class ChatMessage {
     private String dateTime;
     private String type;
 
+    public ChatMessage(){}
+
     public String getSenderID() {
         return senderID;
     }

@@ -2,6 +2,7 @@ package com.example.android.shakeandchat;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -10,7 +11,13 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
+import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,28 +26,31 @@ public class ChatActivity extends AppCompatActivity {
 
     private EditText messageET;
     private ListView messagesContainer;
-    private ImageButton sendBtn;
     private ChatAdapter adapter;
     private ArrayList<ChatMessage> chatHistory;
-    private GoogleSignInAccount account;
     private String senderID;
     private String destID;
+    private DatabaseReference mDBChatChannel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
         FriendUser friendUser = (FriendUser) getIntent().getSerializableExtra("friendClicked");
-        account = (GoogleSignInAccount) getIntent().getParcelableExtra("Account");
+        GoogleSignInAccount account = (GoogleSignInAccount) getIntent().getParcelableExtra("Account");
 
         senderID = account.getEmail();
         destID = friendUser.getEmail();
 
+
+        String decodedSenderID = decodeID(senderID);
+        String decodedDestID = decodeID(destID);
+
         String chat_id;
-        if (account.getEmail().compareTo(friendUser.getEmail()) < 0) {
-            chat_id = account.getEmail() + "-" + friendUser.getEmail();
+        if (decodedSenderID.compareTo(decodedDestID) < 0) {
+            chat_id = decodedSenderID + "-" + decodedDestID;
         } else {
-            chat_id = friendUser.getEmail() + "-" + account.getEmail() ;
+            chat_id = decodedDestID + "-" + decodedSenderID;
         }
 
         if (friendUser != null) {
@@ -48,6 +58,8 @@ public class ChatActivity extends AppCompatActivity {
         } else {
             setTitle("NULL");
         }
+
+        setupDB(chat_id);
         initControls();
 
         chatHistory = new ArrayList<ChatMessage>();
@@ -60,10 +72,52 @@ public class ChatActivity extends AppCompatActivity {
         super.onResume();
     }
 
+    private void setupDB(String chat_id){
+
+        mDBChatChannel = FirebaseDatabase.getInstance().getReference("chat_channel/" + chat_id);
+        mDBChatChannel.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                ChatMessage addedChat = dataSnapshot.getValue(ChatMessage.class);
+                chatHistory.add(addedChat);
+                displayMessage(addedChat);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w("Error", "DB chat_channel connection error" , databaseError.toException());
+            }
+        });
+    }
+
+    private String decodeID(String id){
+        String result = "";
+        for(int i = 0; i < id.length(); i++){
+            if(id.charAt(i) != '@' && id.charAt(i) != '.' && id.charAt(i) != '-')
+                result += id.charAt(i);
+        }
+        return result;
+    }
+
     private void initControls() {
         messagesContainer = (ListView) findViewById(R.id.messagesContainer);
         messageET = (EditText) findViewById(R.id.messageEdit);
-        sendBtn = (ImageButton) findViewById(R.id.chatSendButton);
+        ImageButton sendBtn = (ImageButton) findViewById(R.id.chatSendButton);
 
         RelativeLayout container = (RelativeLayout) findViewById(R.id.chatcontainer);
 
@@ -84,7 +138,7 @@ public class ChatActivity extends AppCompatActivity {
                 chatMessage.setType("text");
 
                 messageET.setText("");
-                displayMessage(chatMessage);
+                mDBChatChannel.push().setValue(chatMessage);
             }
         });
     }

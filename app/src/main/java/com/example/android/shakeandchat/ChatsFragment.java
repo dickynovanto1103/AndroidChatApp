@@ -59,7 +59,7 @@ public class ChatsFragment extends Fragment {
         Log.d(TAG, "CF_onStop");
     }
 
-    class ChatsAdapter extends ArrayAdapter<ChatFriend> {
+//    class ChatsAdapter extends ArrayAdapter<ChatFriend> {
 
 //        ArrayList<FriendUser> userList;
 //        private Context context;
@@ -109,5 +109,5 @@ public class ChatsFragment extends Fragment {
 //
 //            return view;
 //        }
-    }
+//    }
 }
