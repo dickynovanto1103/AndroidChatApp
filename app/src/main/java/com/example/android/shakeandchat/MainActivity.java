@@ -2,6 +2,7 @@ package com.example.android.shakeandchat;
 
 import android.content.Intent;
 import android.provider.SyncStateContract;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.constraint.solver.widgets.ConstraintWidget;
 import android.support.constraint.solver.widgets.Snapshot;
@@ -15,6 +16,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
@@ -56,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     GoogleApiClient mGoogleApiClient;
     private static final String TAG = "SignInActivity";
     private static final int RC_SIGN_IN = 9001;
+    private static final String GOOGLE_ACCOUNT_KEY = "GACCOUNT_KEY";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,19 +71,30 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         //set content view AFTER ABOVE sequence (to avoid crash)
         setContentView(R.layout.activity_main);
 
-
-
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build();
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this, this)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
-
         signInButton = (SignInButton) findViewById(R.id.sign_in_button);
         signInButton.setOnClickListener(this);
 
+        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(GOOGLE_ACCOUNT_KEY, MODE_PRIVATE);
+        String id = sharedPreferences.getString("id", null);
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+
+        if (id != null && account != null){
+            Intent intent = new Intent(this, HomeActivity.class);
+            intent.putExtra("Account", account);
+            startActivity(intent);
+            finish();
+        } else {
+            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestEmail()
+                    .build();
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .enableAutoManage(this, this)
+                    .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                    .build();
+
+            signInButton = (SignInButton) findViewById(R.id.sign_in_button);
+            signInButton.setOnClickListener(this);
+        }
     }
 
     @Override
@@ -146,6 +160,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 }
             });
 
+
+            SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(GOOGLE_ACCOUNT_KEY, MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+
+            editor.putString("id", acct.getId());
+            editor.commit();
 
             Intent intent = new Intent(this, HomeActivity.class);
             intent.putExtra("Account", acct);

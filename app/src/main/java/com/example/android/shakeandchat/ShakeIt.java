@@ -28,6 +28,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -44,6 +45,7 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
     private Location myLocation;
     private GoogleSignInAccount account;
     private ArrayList<ActiveUser> foundUser;
+    private ArrayList<ActiveUser> myFriendList;
     private FriendAdapter friendAdapter;
 
     private void writeActiveUser(String name, String email, String displayImage) {
@@ -119,14 +121,45 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
         }
     }
 
+    private boolean isInFriendList(ActiveUser user, ArrayList<ActiveUser> listUser){
+        int idx = 0;
+        boolean found = false;
+        while(idx < listUser.size() && !found){
+            if(listUser.get(idx).email.equals(user.email)){
+                found = true;
+            }
+            idx++;
+        }
+        return found;
+    }
+
     private void setupDB(){
+        myFriendList = new ArrayList<ActiveUser>();
+        mDBFriendList = FirebaseDatabase.getInstance().getReference("friendList/" + account.getId());
+        mDBFriendList.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot user: dataSnapshot.getChildren()){
+                    ActiveUser friend = user.getValue(ActiveUser.class);
+                    myFriendList.add(friend);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w("DB Error", "Error connecting to friendList DB", databaseError.toException());
+            }
+        });
+
         mDBActiveUser = FirebaseDatabase.getInstance().getReference("active_users");
         ChildEventListener userListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Log.d("shaking ", (Boolean.toString(isShaking)));
                 ActiveUser addedUser = dataSnapshot.getValue(ActiveUser.class);
-                if (addedUser.username != account.getDisplayName()){
+
+
+                if (addedUser.username != account.getDisplayName() && !isInFriendList(addedUser, myFriendList) ){
                     foundUser.add(addedUser);
                     friendAdapter.notifyDataSetChanged();
                 }
@@ -144,7 +177,7 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
                 boolean found = false;
                 int i = 0;
                 while(!found && i < foundUser.size()){
-                    if(foundUser.get(i).username == removedUser.username) {
+                    if(foundUser.get(i).email == removedUser.email) {
                         foundUser.remove(i);
                         found = true;
                     }
@@ -165,8 +198,6 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
             }
         };
         mDBActiveUser.addChildEventListener(userListener);
-
-        mDBFriendList = FirebaseDatabase.getInstance().getReference("friendList/" + account.getId());
     }
 
     private void setDisplayFoundFriend(boolean view){

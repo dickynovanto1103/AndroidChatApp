@@ -86,8 +86,7 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.O
         mGoogleApiClient.connect();
 
         account = getIntent().getParcelableExtra("Account");
-        setupFriendList();
-
+        Log.d(TAG + "____b", String.valueOf(account));
         Button addFriend = (Button) findViewById(R.id.addFriend);
         addFriend.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -192,6 +191,7 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.O
     public void setupFriendList() {
         FriendsFragment friend_frag = (FriendsFragment) adapter.getItem(0);
         friend_frag.setFriendList(account);
+//        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -200,9 +200,13 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.O
         sensorManager.unregisterListener(this);
     }
 
+
+
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d(TAG, "onResumeHomeActivity");
+        setupFriendList();
         sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
@@ -212,7 +216,7 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.O
         if (sensorEvent.sensor.getType() == Sensor.TYPE_LIGHT) {
             Log.d(TAG, String.valueOf(sensorEvent.values[0]));
             View view = findViewById(R.id.background_view);
-            if (sensorEvent.values[0] < 15) {
+            if (sensorEvent.values[0] < 9) {
                 Log.d(TAG, "Jadi gelap");
                 view.setAlpha(1f);
             } else {
