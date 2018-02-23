@@ -87,8 +87,7 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.O
 
         account = getIntent().getParcelableExtra("Account");
         Log.d(TAG + "____b", String.valueOf(account));
-        Button addFriend = (Button) findViewById(R.id.addFriend);
-        addFriend.setOnClickListener(new View.OnClickListener() {
+        mButtonAddFriend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent  intent = new Intent(view.getContext(), ShakeIt.class);
@@ -136,9 +135,6 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.O
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                Log.d(TAG, "onPageScrolled-position: " + position);
-                Log.d(TAG, "onPageScrolled-positionOffset: " + positionOffset);
-                Log.d(TAG, "onPageScrolled-positionOffsetPixels: " + positionOffsetPixels);
             }
 
             @Override
@@ -172,7 +168,6 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.O
 
             @Override
             public void onPageScrollStateChanged(int state) {
-                Log.d(TAG, "onPageScrollStateChanged: " + state);
             }
         });
         viewPager.setAdapter(adapter);

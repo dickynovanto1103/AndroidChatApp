@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.location.Location;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -77,9 +78,14 @@ public class ShakeIt extends AppCompatActivity implements ActivityCompat.OnReque
                     if (location != null) {
                         myLocation = location;
                         Log.d("Location: ", location.toString());
-                        String displayImage = account.getPhotoUrl().toString();
-                        if (displayImage == null) displayImage = "default";
-                        writeActiveUser(account.getDisplayName(), account.getEmail(), displayImage);
+                        Uri displayImage = account.getPhotoUrl();
+                        String photoURL;
+                        if (displayImage == null) {
+                            photoURL = "default";
+                        } else {
+                            photoURL = displayImage.toString();
+                        }
+                        writeActiveUser(account.getDisplayName(), account.getEmail(), photoURL);
                     }
                 }
             });

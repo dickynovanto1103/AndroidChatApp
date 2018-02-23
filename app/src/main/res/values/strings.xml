@@ -15,4 +15,5 @@
     <string name="user_nama">nama</string>
     <string name="sign_out">Sign out</string>
     <string name="add_friend">Add Friend</string>
+    <string name="typeMessage" />
 </resources>
