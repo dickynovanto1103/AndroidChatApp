@@ -25,3 +25,4 @@ Berikut adalah cara penggunaan aplikasi Shake and Chat:
 - Pengguna dapat melakukan sign out dengan cara menuju fragment "Profile", dan menekan tombol Sign Out yang ada di fragment tersebut (Di bawah foto profil, nama, dan email pengguna)
 
 ## Letak Deliverable
+Project: http://gitlab.informatika.org/IF3111-2018-DAUM/android
