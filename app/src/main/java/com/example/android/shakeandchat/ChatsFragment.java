@@ -181,6 +181,7 @@ public class ChatsFragment extends Fragment {
             TextView chatsName = view.findViewById(R.id.chatsName);
             TextView chatsLastMessage = view.findViewById(R.id.chatsLastMessage);
             TextView chatsTime = view.findViewById(R.id.chatsTime);
+            TextView newBadge = view.findViewById(R.id.new_badge);
 
             chatFriend = userList.get(i);
 
@@ -193,9 +194,9 @@ public class ChatsFragment extends Fragment {
             chatsTime.setText("10:31");
 
             if (chatFriend.isOpen()) {
-                chatsLastMessage.setTextColor(R.color.chats);
+                newBadge.setVisibility(View.GONE);
             } else {
-                chatsLastMessage.setTextColor(R.color.colorAccent);
+                newBadge.setVisibility(View.VISIBLE);
             }
             if ((chatFriend.photoURL).equals("default")) {
                 chatsImage.setImageResource(R.drawable.default_profile);

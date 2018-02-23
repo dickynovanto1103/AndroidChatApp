@@ -44,4 +44,18 @@
         android:layout_marginRight="8dp"
         android:layout_alignParentRight="true"
         android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/new_badge"
+        android:text="new"
+        android:background="@drawable/rounded_corner"
+        android:layout_marginRight="8dp"
+        android:layout_below="@+id/chatsTime"
+        android:layout_alignParentRight="true"
+        android:textColor="@color/colorWhite"
+        android:padding="2dp"
+        android:visibility="invisible"
+        />
 </RelativeLayout>
