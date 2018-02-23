@@ -44,7 +44,6 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.O
     private ViewPager mViewPager;
     public TabLayout tabLayout;
     private Button mButtonAddFriend;
-    private Button mButtonChats; // TODO dihapus
     private int[] tabIcons_w = {
             R.drawable.icon_friends_w,
             R.drawable.icon_chats_w,
@@ -68,7 +67,6 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.O
         mSectionsPageAdapter = new SectionsPageAdapter(getSupportFragmentManager());
 
         mButtonAddFriend = findViewById(R.id.addFriend);
-        mButtonChats = findViewById(R.id.chatFriend); //TODO
         mToolbar = findViewById(R.id.toolbar);
         mViewPager = findViewById(R.id.container);
         setupViewPager(mViewPager);
@@ -94,13 +92,6 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.O
             public void onClick(View view) {
                 Intent  intent = new Intent(view.getContext(), ShakeIt.class);
                 intent.putExtra("Account", account);
-                startActivity(intent);
-            }
-        });
-        mButtonChats.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(view.getContext(), ChatActivity.class);
                 startActivity(intent);
             }
         });
@@ -153,7 +144,6 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.O
                     case 0:
                         mToolbar.setTitle("Friends");
                         mButtonAddFriend.setVisibility(View.VISIBLE);
-                        mButtonChats.setVisibility(View.INVISIBLE);
                         tabLayout.getTabAt(0).setIcon(R.drawable.icon_friends);
                         tabLayout.getTabAt(1).setIcon(R.drawable.icon_chats_w);
                         tabLayout.getTabAt(2).setIcon(R.drawable.icon_profile_w);
@@ -161,7 +151,6 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.O
                     case 1:
                         mToolbar.setTitle("Chats");
                         mButtonAddFriend.setVisibility(View.INVISIBLE);
-                        mButtonChats.setVisibility(View.VISIBLE);
                         tabLayout.getTabAt(0).setIcon(R.drawable.icon_friends_w);
                         tabLayout.getTabAt(1).setIcon(R.drawable.icon_chats);
                         tabLayout.getTabAt(2).setIcon(R.drawable.icon_profile_w);
@@ -169,7 +158,6 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.O
                     case 2:
                         mToolbar.setTitle("Profile");
                         mButtonAddFriend.setVisibility(View.INVISIBLE);
-                        mButtonChats.setVisibility(View.INVISIBLE);
                         tabLayout.getTabAt(0).setIcon(R.drawable.icon_friends_w);
                         tabLayout.getTabAt(1).setIcon(R.drawable.icon_chats_w);
                         tabLayout.getTabAt(2).setIcon(R.drawable.icon_profile);

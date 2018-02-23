@@ -2,6 +2,7 @@ package com.example.android.shakeandchat;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -40,6 +41,26 @@ public class ChatActivity extends AppCompatActivity {
 
         RelativeLayout container = (RelativeLayout) findViewById(R.id.chatcontainer);
         loadDummyHistory();
+
+        sendBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String messageText = messageET.getText().toString();
+                if (messageText.isEmpty()) {
+                    return;
+                }
+
+                ChatMessage chatMessage = new ChatMessage();
+
+                chatMessage.setId(112);
+                chatMessage.setMessage(messageText);
+                chatMessage.setDateTime(DateFormat.getDateTimeInstance().format(new Date()));
+                chatMessage.setMe(true);
+
+                messageET.setText("");
+                displayMessage(chatMessage);
+            }
+        });
     }
 
     private void loadDummyHistory() {
