@@ -22,8 +22,9 @@ public class ChatActivity extends AppCompatActivity {
     private ImageButton sendBtn;
     private ChatAdapter adapter;
     private ArrayList<ChatMessage> chatHistory;
-    private String chat_id;
     private GoogleSignInAccount account;
+    private String senderID;
+    private String destID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +33,10 @@ public class ChatActivity extends AppCompatActivity {
         FriendUser friendUser = (FriendUser) getIntent().getSerializableExtra("friendClicked");
         account = (GoogleSignInAccount) getIntent().getParcelableExtra("Account");
 
+        senderID = account.getEmail();
+        destID = friendUser.getEmail();
+
+        String chat_id;
         if (account.getEmail().compareTo(friendUser.getEmail()) < 0) {
             chat_id = account.getEmail() + "-" + friendUser.getEmail();
         } else {
@@ -44,6 +49,15 @@ public class ChatActivity extends AppCompatActivity {
             setTitle("NULL");
         }
         initControls();
+
+        chatHistory = new ArrayList<ChatMessage>();
+        adapter = new ChatAdapter(ChatActivity.this, new ArrayList<ChatMessage>(), senderID);
+        messagesContainer.setAdapter(adapter);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
     private void initControls() {
@@ -52,7 +66,6 @@ public class ChatActivity extends AppCompatActivity {
         sendBtn = (ImageButton) findViewById(R.id.chatSendButton);
 
         RelativeLayout container = (RelativeLayout) findViewById(R.id.chatcontainer);
-        loadDummyHistory();
 
         sendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,40 +77,16 @@ public class ChatActivity extends AppCompatActivity {
 
                 ChatMessage chatMessage = new ChatMessage();
 
-                chatMessage.setId(112);
+                chatMessage.setSenderID(senderID);
                 chatMessage.setMessage(messageText);
                 chatMessage.setDateTime(DateFormat.getDateTimeInstance().format(new Date()));
-                chatMessage.setMe(true);
+                chatMessage.setDestID(destID);
+                chatMessage.setType("text");
 
                 messageET.setText("");
                 displayMessage(chatMessage);
             }
         });
-    }
-
-    private void loadDummyHistory() {
-        chatHistory = new ArrayList<ChatMessage>();
-
-        ChatMessage msg = new ChatMessage();
-        msg.setId(1);
-        msg.setMe(false);
-        msg.setMessage("Hi");
-        msg.setDateTime(DateFormat.getDateTimeInstance().format(new Date()));
-        chatHistory.add(msg);
-        ChatMessage msg1 = new ChatMessage();
-        msg1.setId(2);
-        msg1.setMe(false);
-        msg1.setMessage("How r u doing???");
-        msg1.setDateTime(DateFormat.getDateTimeInstance().format(new Date()));
-        chatHistory.add(msg1);
-
-        adapter = new ChatAdapter(ChatActivity.this, new ArrayList<ChatMessage>());
-        messagesContainer.setAdapter(adapter);
-
-        for(int i=0; i<chatHistory.size(); i++) {
-            ChatMessage message = chatHistory.get(i);
-            displayMessage(message);
-        }
     }
 
     private void displayMessage(ChatMessage message) {

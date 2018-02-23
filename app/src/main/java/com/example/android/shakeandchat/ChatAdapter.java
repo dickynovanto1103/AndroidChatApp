@@ -11,6 +11,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+
 import java.util.List;
 
 /**
@@ -21,10 +23,12 @@ public class ChatAdapter extends BaseAdapter {
 
     private final List<ChatMessage> chatMessages;
     private Activity context;
+    private String myID;
 
-    public ChatAdapter(Activity context, List<ChatMessage> chatMessages) {
+    public ChatAdapter(Activity context, List<ChatMessage> chatMessages, String myID) {
         this.context = context;
         this.chatMessages = chatMessages;
+        this.myID = myID;
     }
 
     @Override
@@ -64,7 +68,7 @@ public class ChatAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        boolean myMsg = chatMessage.isMe() ;//Just a dummy check
+        boolean myMsg = chatMessage.getSenderID().equals(myID);//Just a dummy check
         //to simulate whether it me or other sender
         setAlignment(holder, myMsg);
         holder.txtMessage.setText(chatMessage.getMessage());
