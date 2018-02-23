@@ -26,3 +26,4 @@ Berikut adalah cara penggunaan aplikasi Shake and Chat:
 
 ## Letak Deliverable
 Project: http://gitlab.informatika.org/IF3111-2018-DAUM/android
+Laporan: https://drive.google.com/file/d/1-BiheyQUaD8-SMqMSbQMB7n4_AWn6rl4/view
