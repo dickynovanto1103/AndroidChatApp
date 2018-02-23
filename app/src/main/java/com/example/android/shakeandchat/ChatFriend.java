@@ -13,13 +13,15 @@ class ChatFriend implements Serializable {
     public String timeStamp;
     public String lastMessage;
     public boolean isOpen;
+    public String email;
 
-    public ChatFriend(String name, String photoURL, String timeStamp, String lastMessage, boolean isOpen) {
+    public ChatFriend(String name, String photoURL, String timeStamp, String lastMessage, boolean isOpen, String email) {
         this.name = name;
         this.photoURL = photoURL;
         this.timeStamp = timeStamp;
         this.lastMessage = lastMessage;
         this.isOpen = isOpen;
+        this.email = email;
     }
 
     public String getName() {
@@ -62,5 +64,11 @@ class ChatFriend implements Serializable {
         isOpen = open;
     }
 
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
+    public String getEmail(){
+        return email;
+    }
 }

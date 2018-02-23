@@ -84,7 +84,8 @@ public class ChatsFragment extends Fragment {
                     String photoURL = String.valueOf((chatSnapshot.child("photoURL")).getValue());
                     String lastMessage = String.valueOf((chatSnapshot.child("lastMessage")).getValue());
                     String timeStamp = String.valueOf((chatSnapshot.child("timeStamp")).getValue());
-                    chatFriendList.add(new ChatFriend(name, photoURL, timeStamp, lastMessage, isOpen));
+                    String email = String.valueOf(chatSnapshot.child("email").getValue());
+                    chatFriendList.add(new ChatFriend(name, photoURL, timeStamp, lastMessage, isOpen, email));
                 }
 
                 Log.d(TAG + "__a", String.valueOf(chatFriendList.size()));
@@ -99,11 +100,12 @@ public class ChatsFragment extends Fragment {
                         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
                             ChatFriend item = chatsAdapter.getItem(i);
+                            FriendUser friend = new FriendUser(item.getName(), item.getEmail(), item.getPhotoURL());
                             if (item != null) {
                                 Log.d("TeSTing", String.valueOf(item));
                                 Log.d("TeSTing", String.valueOf(item.getName()));
                                 Intent intent = new Intent(activity, ChatActivity.class);
-                                intent.putExtra("chatClicked", item);
+                                intent.putExtra("friendClicked", friend);
                                 intent.putExtra("Account", account);
                                 startActivity(intent);
                             } else {

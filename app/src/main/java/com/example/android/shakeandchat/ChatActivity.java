@@ -116,7 +116,7 @@ public class ChatActivity extends AppCompatActivity {
     private void initControls() {
         messagesContainer = (ListView) findViewById(R.id.messagesContainer);
         messageET = (EditText) findViewById(R.id.messageEdit);
-        ImageButton sendBtn = (ImageButton) findViewById(R.id.chatSendButton);
+        final ImageButton sendBtn = (ImageButton) findViewById(R.id.chatSendButton);
 
         RelativeLayout container = (RelativeLayout) findViewById(R.id.chatcontainer);
 
@@ -140,10 +140,10 @@ public class ChatActivity extends AppCompatActivity {
                 messageET.setText("");
                 mDBChatChannel.push().setValue(chatMessage);
 
-                ChatFriend senderChatFriend = new ChatFriend(dest.getName(), dest.getPhotoURL(), timeNow, messageText, false);
+                ChatFriend senderChatFriend = new ChatFriend(dest.getName(), dest.getPhotoURL(), timeNow, messageText, false, dest.getEmail());
                 mDBChatFriend.child(decodeID(sender.getEmail())).child(decodeID(dest.getEmail())).setValue(senderChatFriend);
 
-                ChatFriend destChatFriend = new ChatFriend(sender.getDisplayName(), sender.getPhotoUrl().toString(), timeNow, messageText, true);
+                ChatFriend destChatFriend = new ChatFriend(sender.getDisplayName(), sender.getPhotoUrl().toString(), timeNow, messageText, true, sender.getEmail());
                 mDBChatFriend.child(decodeID(dest.getEmail())).child(decodeID(sender.getEmail())).setValue(destChatFriend);
             }
         });
