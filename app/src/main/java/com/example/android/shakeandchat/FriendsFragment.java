@@ -147,9 +147,6 @@ public class FriendsFragment extends Fragment {
         Log.d(TAG, "onStop_Friends");
     }
 
-
-
-
     class FriendsAdapter extends ArrayAdapter<FriendUser> {
 
         ArrayList<FriendUser> userList;
