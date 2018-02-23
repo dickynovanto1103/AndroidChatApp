@@ -24,7 +24,12 @@ public class ChatActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-        setTitle("Um Ganteng");
+        FriendUser friendUser = (FriendUser) getIntent().getSerializableExtra("friendClicked");
+        if (friendUser != null) {
+            setTitle(friendUser.getName());
+        } else {
+            setTitle("NULL");
+        }
         initControls();
     }
 

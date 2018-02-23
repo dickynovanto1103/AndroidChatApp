@@ -2,6 +2,7 @@ package com.example.android.shakeandchat;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
@@ -85,10 +87,26 @@ public class FriendsFragment extends Fragment {
                 Log.d(TAG + "__a", String.valueOf(friendList.size()));
                 Log.d(TAG + "__b", String.valueOf(friendCount));
 
-                FragmentActivity activity = getActivity();
+                final FragmentActivity activity = getActivity();
                 if (activity != null) {
                     friendsAdapter = new FriendsAdapter(activity, R.layout.friends_layout, friendList);
                     mListView.setAdapter(friendsAdapter);
+                    mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                            FriendUser item = friendsAdapter.getItem(i);
+                            if (item != null) {
+                                Log.d("TeSTing", String.valueOf(item));
+                                Log.d("TeSTing", String.valueOf(item.getName()));
+                                Intent intent = new Intent(activity, ChatActivity.class);
+                                intent.putExtra("friendClicked", item);
+                                startActivity(intent);
+                            } else {
+                                Log.d("Testing", "null bro");
+                            }
+                        }
+                    });
                     friendsAdapter.notifyDataSetChanged();
                 }
 
@@ -143,6 +161,12 @@ public class FriendsFragment extends Fragment {
             this.context = context;
             this.resource = resource;
             this.userList = user;
+        }
+
+        @Nullable
+        @Override
+        public FriendUser getItem(int position) {
+            return super.getItem(position);
         }
 
         @Override
