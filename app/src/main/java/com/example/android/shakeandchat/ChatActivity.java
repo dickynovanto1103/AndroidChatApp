@@ -80,7 +80,6 @@ public class ChatActivity extends AppCompatActivity {
                 ChatMessage addedChat = dataSnapshot.getValue(ChatMessage.class);
                 chatHistory.add(addedChat);
                 displayMessage(addedChat);
-                markAsRead();
             }
 
             @Override
@@ -105,10 +104,11 @@ public class ChatActivity extends AppCompatActivity {
         });
 
         mDBChatFriend = FirebaseDatabase.getInstance().getReference("chatList");
-        markAsRead();
+        markAsRead(2);
     }
 
-    private void markAsRead(){
+    private void markAsRead(int pos){
+        Log.d("MARK AS READ FROM:", String.valueOf(pos));
         Map<String, Object> hasOpened = new HashMap<String, Object>();
         hasOpened.put("isOpen", true);
         mDBChatFriend.child(decodeID(sender.getEmail())).child(decodeID(dest.getEmail())).updateChildren(hasOpened);
