@@ -55,6 +55,7 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
+
         <activity android:name=".ImageGalleryActivity" />
         <service
             android:name=".MyFirebaseMessagingService">
@@ -67,6 +68,10 @@
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
+        </service>
+
+        <service
+            android:name=".DownloadIntentService">
         </service>
 
         <meta-data

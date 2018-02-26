@@ -101,7 +101,15 @@ public class ChatActivity extends AppCompatActivity {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 ChatMessage addedChat = dataSnapshot.getValue(ChatMessage.class);
                 chatHistory.add(addedChat);
+                if(addedChat.getType() == "image"){
+                    Intent intent = new Intent(ChatActivity.this, DownloadIntentService.class);
+                    intent.putExtra("url", addedChat.getMessage());
+                    ChatActivity.this.startService(intent);
+                }
+
+
                 displayMessage(addedChat);
+
             }
 
             @Override
@@ -209,17 +217,12 @@ public class ChatActivity extends AppCompatActivity {
             filePath = data.getData();
             Log.d("status", "berhasil cuy");
             try {
-                Log.d("test", "masuk sini1");
+
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
-                Log.d("test", "masuk sini2");
-//                imageView.setImageBitmap(bitmap);
-                Log.d("test", "masuk sini3");
+
                 storage = FirebaseStorage.getInstance();
-                Log.d("test", "masuk sini4");
                 storageReference = storage.getReference();
-                Log.d("test", "masuk sini5");
                 uploadImage();
-                Log.d("test", "masuk sini6");
 
             }catch(IOException e) {
                 e.printStackTrace();
@@ -252,7 +255,7 @@ public class ChatActivity extends AppCompatActivity {
                             chatMessage.setMessage(messageText);
                             chatMessage.setDateTime(timeNow);
                             chatMessage.setDestID(dest.getEmail());
-                            chatMessage.setType("text");
+                            chatMessage.setType("image");
 
                             messageET.setText("");
                             mDBChatChannel.push().setValue(chatMessage);

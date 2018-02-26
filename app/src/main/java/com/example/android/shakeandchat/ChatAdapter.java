@@ -2,6 +2,11 @@ package com.example.android.shakeandchat;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Environment;
+import android.os.ResultReceiver;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +18,11 @@ import android.widget.TextView;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 
 /**
@@ -58,6 +68,7 @@ public class ChatAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
         ChatMessage chatMessage = getItem(position);
+
         LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         if (convertView == null) {
@@ -75,6 +86,39 @@ public class ChatAdapter extends BaseAdapter {
         holder.txtInfo.setText(chatMessage.getDateTime());
 
         return convertView;
+    }
+
+    public void download(String url) {
+        //final ResultReceiver receiver = intent.getParcelableExtra("receiver");
+        Bundle bundle = new Bundle();
+        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        String fileName = "gambar.jpg";
+        File file = new File(path, "/" + fileName);
+
+        try {
+            file.createNewFile();
+            URL downloadUrl = new URL(url);
+            HttpURLConnection conn = (HttpURLConnection) downloadUrl.openConnection();
+            int responseCode = conn.getResponseCode();
+            if(responseCode != 200) {
+                throw new Exception("error in connection");
+            }
+            InputStream is = conn.getInputStream();
+            FileOutputStream os = new FileOutputStream(file);
+            byte buffer[] = new byte[1024];
+            int byteCount;
+            while((byteCount = is.read(buffer)) != -1) {
+                os.write(buffer,0, byteCount);
+            }
+            os.close();
+            is.close();
+            Log.d("status", "downloadSuccess");
+            String filePath = file.getPath();
+            bundle.putString("filePath", filePath);
+
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void add(ChatMessage message) {
