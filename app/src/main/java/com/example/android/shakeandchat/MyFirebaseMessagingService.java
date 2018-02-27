@@ -15,35 +15,29 @@ import android.util.Log;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.util.Map;
+
 /**
  * Created by dicky on 21/02/18.
  */
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private static final String TAG = "MyFirebaseMsgService";
-
-    //dipanggil ketika pesan diterima
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage){
         Log.d(TAG, "From: "+remoteMessage.getFrom());
 
-        //check if message contains a data payload
         if(remoteMessage.getData().size() > 0) {
             Log.d(TAG, "Message data payload: "+remoteMessage.getData());
-
-//            if(true){
-//                scheduleJob();
-//            }else{
-//                handleNow();
-//            }
-        }
-
-        if(remoteMessage.getNotification() != null ) {
-            Log.d(TAG, "Message notification body: "+ remoteMessage.getNotification().getBody());
+            Map<String, String> data = remoteMessage.getData();
+            String sender = data.get("sender");
+            String message = data.get("message");
+            Log.d("Sender", sender + " " + message);
+            sendNotification(sender, message);
         }
     }
 
-    private void sendNotification(String messageBody) {
+    private void sendNotification(String sender, String message) {
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this,0, intent, PendingIntent.FLAG_ONE_SHOT);
@@ -52,9 +46,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)
-                .setSmallIcon(R.drawable.ic_stat_ic_notification)
-                .setContentTitle("FCM Message")
-                .setContentText(messageBody)
+                .setSmallIcon(R.drawable.icon_chats)
+                .setContentTitle(sender)
+                .setContentText(message)
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent);
