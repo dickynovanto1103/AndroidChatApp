@@ -88,39 +88,6 @@ public class ChatAdapter extends BaseAdapter {
         return convertView;
     }
 
-    public void download(String url) {
-        //final ResultReceiver receiver = intent.getParcelableExtra("receiver");
-        Bundle bundle = new Bundle();
-        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        String fileName = "gambar.jpg";
-        File file = new File(path, "/" + fileName);
-
-        try {
-            file.createNewFile();
-            URL downloadUrl = new URL(url);
-            HttpURLConnection conn = (HttpURLConnection) downloadUrl.openConnection();
-            int responseCode = conn.getResponseCode();
-            if(responseCode != 200) {
-                throw new Exception("error in connection");
-            }
-            InputStream is = conn.getInputStream();
-            FileOutputStream os = new FileOutputStream(file);
-            byte buffer[] = new byte[1024];
-            int byteCount;
-            while((byteCount = is.read(buffer)) != -1) {
-                os.write(buffer,0, byteCount);
-            }
-            os.close();
-            is.close();
-            Log.d("status", "downloadSuccess");
-            String filePath = file.getPath();
-            bundle.putString("filePath", filePath);
-
-        }catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     public void add(ChatMessage message) {
         chatMessages.add(message);
     }
