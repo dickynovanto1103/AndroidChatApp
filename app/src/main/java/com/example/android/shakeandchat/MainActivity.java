@@ -132,6 +132,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
     }
 
+    private String decodeID(String id){
+        String result = "";
+        for(int i = 0; i < id.length(); i++){
+            if(id.charAt(i) != '@' && id.charAt(i) != '.' && id.charAt(i) != '-')
+                result += id.charAt(i);
+        }
+        return result;
+    }
+
     private void handleSignInResult(GoogleSignInResult result) {
         Log.d(TAG, "handleSignInResult:" + result.isSuccess());
         if (result.isSuccess()) {
@@ -153,7 +162,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
             UserWithFirebaseToken userWithFirebaseToken = new UserWithFirebaseToken(name, email, token);
 
-            reference.push().setValue(userWithFirebaseToken);
+            reference.child(decodeID(acct.getEmail())).setValue(userWithFirebaseToken);
 
             Log.d("hasil", "berhasil masukkan");
 
