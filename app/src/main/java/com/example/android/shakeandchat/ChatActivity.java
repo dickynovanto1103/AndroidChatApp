@@ -120,12 +120,11 @@ public class ChatActivity extends AppCompatActivity {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 ChatMessage addedChat = dataSnapshot.getValue(ChatMessage.class);
                 chatHistory.add(addedChat);
-                if(addedChat.getType() == "image"){
+                if(addedChat.getType().equals("image")){
                     Intent intent = new Intent(ChatActivity.this, DownloadIntentService.class);
                     intent.putExtra("url", addedChat.getMessage());
                     ChatActivity.this.startService(intent);
                 }
-
 
                 displayMessage(addedChat);
 
