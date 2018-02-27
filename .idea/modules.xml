@@ -3,7 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/android.iml" filepath="$PROJECT_DIR$/android.iml" />
+      <module fileurl="file://D:\Kuliah\Semester 6\IF3111 - Pengembangan Aplikasi pada Platform Khusus\Tugas\DEMO\android\android.iml" filepath="D:\Kuliah\Semester 6\IF3111 - Pengembangan Aplikasi pada Platform Khusus\Tugas\DEMO\android\android.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://D:\Kuliah\Semester 6\IF3111 - Pengembangan Aplikasi pada Platform Khusus\Tugas\DEMO\android\app\app.iml" filepath="D:\Kuliah\Semester 6\IF3111 - Pengembangan Aplikasi pada Platform Khusus\Tugas\DEMO\android\app\app.iml" />
     </modules>
   </component>
 </project>
