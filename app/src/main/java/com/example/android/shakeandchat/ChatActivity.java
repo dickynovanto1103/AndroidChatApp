@@ -3,21 +3,17 @@ package com.example.android.shakeandchat;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.media.Image;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -27,13 +23,13 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -51,9 +47,9 @@ public class ChatActivity extends AppCompatActivity {
     private FriendUser dest;
     private DatabaseReference mDBChatChannel;
     private DatabaseReference mDBChatFriend;
+    private DatabaseReference mDBListToken;
     private Uri filePath;
     private final int IMAGE_REQUEST = 71;
-//    private ImageView imageView;
     private FirebaseStorage storage;
     private StorageReference storageReference;
 
@@ -134,6 +130,7 @@ public class ChatActivity extends AppCompatActivity {
         });
 
         mDBChatFriend = FirebaseDatabase.getInstance().getReference("chatList");
+        mDBListToken = FirebaseDatabase.getInstance().getReference("listToken");
         markAsRead(2);
     }
 
@@ -166,7 +163,7 @@ public class ChatActivity extends AppCompatActivity {
         sendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String messageText = messageET.getText().toString();
+                final String messageText = messageET.getText().toString();
                 if (messageText.isEmpty()) {
                     return;
                 }
@@ -188,6 +185,23 @@ public class ChatActivity extends AppCompatActivity {
 
                 ChatFriend destChatFriend = new ChatFriend(sender.getDisplayName(), sender.getPhotoUrl().toString(), timeNow, messageText, false, sender.getEmail());
                 mDBChatFriend.child(decodeID(dest.getEmail())).child(decodeID(sender.getEmail())).setValue(destChatFriend);
+
+                mDBListToken.child(decodeID(dest.getEmail())).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        UserWithFirebaseToken user = dataSnapshot.getValue(UserWithFirebaseToken.class);
+                        if(user != null){
+                            Log.d("Destination Token", user.getFirebaseToken());
+                            NotificationPost notif = new NotificationPost(sender.getDisplayName(), messageText, user.getFirebaseToken());
+                            notif.execute();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
             }
         });
 
